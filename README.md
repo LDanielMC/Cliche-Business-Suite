@@ -1,58 +1,174 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Cliche Business Suite
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Sistema de Gestión Integral para Servicios de Posicionamiento Local.
 
-## About Laravel
+## Stack tecnológico
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- **PHP** 8.3+
+- **Laravel** 13
+- **MySQL** 8+ (vía WAMP)
+- **Tailwind CSS** v4
+- **Alpine.js** v3
+- **Vite** 8
+- **Node.js** 22+
+- **Composer** 2+
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+---
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## Requisitos previos
 
-## Learning Laravel
+Antes de instalar asegúrate de tener lo siguiente en tu máquina:
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+| Herramienta | Versión mínima | Descarga |
+|---|---|---|
+| PHP | 8.3 | [php.net](https://www.php.net/downloads) o incluido en WAMP |
+| Composer | 2.0 | [getcomposer.org](https://getcomposer.org) |
+| Node.js | 18.0 | [nodejs.org](https://nodejs.org) |
+| WAMP / XAMPP | cualquiera con MySQL 8+ | [wampserver.com](https://www.wampserver.com) |
+| Git | cualquiera | [git-scm.com](https://git-scm.com) |
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+> **Windows:** asegúrate de que `php`, `composer` y `node` estén en el PATH del sistema.
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+---
 
-## Agentic Development
+## Instalación
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+### 1. Clonar el repositorio
 
 ```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
+git clone <url-del-repositorio> "Cliche Business Suite"
+cd "Cliche Business Suite"
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+### 2. Instalar dependencias PHP
 
-## Contributing
+```bash
+composer install
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### 3. Instalar dependencias Node
 
-## Code of Conduct
+```bash
+npm install
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### 4. Configurar el archivo de entorno
 
-## Security Vulnerabilities
+```bash
+copy .env.example .env
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+Abre el `.env` y ajusta los datos de tu base de datos:
 
-## License
+```env
+APP_NAME="Cliche Business Suite"
+APP_URL=http://localhost:8000
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=nombre_de_tu_base_de_datos
+DB_USERNAME=root
+DB_PASSWORD=
+```
+
+> **Nota:** La contraseña de MySQL en WAMP suele estar vacía por defecto.
+
+### 5. Generar la clave de aplicación
+
+```bash
+php artisan key:generate
+```
+
+### 6. Crear la base de datos
+
+Abre **phpMyAdmin** (http://localhost/phpmyadmin) o tu cliente MySQL y crea una base de datos nueva con el mismo nombre que pusiste en `DB_DATABASE`, usando cotejamiento `utf8mb4_unicode_ci`.
+
+También puedes hacerlo desde la terminal de WAMP:
+
+```bash
+mysql -u root -e "CREATE DATABASE nombre_de_tu_base_de_datos CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
+```
+
+### 7. Ejecutar migraciones
+
+```bash
+php artisan migrate
+```
+
+---
+
+## Levantar el proyecto
+
+Necesitas dos terminales corriendo en paralelo:
+
+**Terminal 1 — Servidor PHP:**
+```bash
+php artisan serve
+```
+
+**Terminal 2 — Assets (Vite + Tailwind):**
+```bash
+npm run dev
+```
+
+Luego abre tu navegador en: **http://localhost:8000**
+
+---
+
+## Comandos útiles
+
+| Comando | Descripción |
+|---|---|
+| `php artisan serve` | Inicia el servidor de desarrollo |
+| `npm run dev` | Compila assets en modo desarrollo con hot reload |
+| `npm run build` | Compila assets para producción |
+| `php artisan migrate` | Ejecuta las migraciones pendientes |
+| `php artisan migrate:fresh` | Borra y vuelve a crear todas las tablas |
+| `php artisan migrate:fresh --seed` | Ídem + carga datos de prueba |
+| `php artisan route:list` | Lista todas las rutas registradas |
+| `php artisan make:model NombreModelo -mcr` | Crea modelo, migración y controlador resource |
+| `php artisan tinker` | Consola interactiva de Laravel |
+
+---
+
+## Estructura del proyecto
+
+```
+Cliche Business Suite/
+├── app/
+│   ├── Http/
+│   │   ├── Controllers/    # Controladores MVC
+│   │   └── Middleware/
+│   └── Models/             # Modelos Eloquent
+├── database/
+│   ├── migrations/         # Migraciones de base de datos
+│   └── seeders/            # Datos de prueba
+├── resources/
+│   ├── css/
+│   │   └── app.css         # Tailwind CSS (punto de entrada)
+│   ├── js/
+│   │   └── app.js          # JavaScript / Alpine.js
+│   └── views/              # Vistas Blade
+├── routes/
+│   └── web.php             # Rutas de la aplicación
+├── .env.example            # Plantilla de configuración
+├── vite.config.js          # Configuración de Vite
+└── composer.json
+```
+
+---
+
+## Problemas comunes
+
+**`php` no se reconoce como comando**
+→ Agrega la carpeta de PHP de WAMP al PATH del sistema (ej. `C:\wamp64\bin\php\php8.3.x`).
+
+**Error de conexión a la base de datos**
+→ Verifica que WAMP esté corriendo (ícono verde) y que `DB_DATABASE`, `DB_USERNAME` y `DB_PASSWORD` en tu `.env` sean correctos.
+
+**Puerto 8000 ocupado**
+→ Usa `php artisan serve --port=8080` para cambiar el puerto.
+
+**Vite no encuentra los assets**
+→ Asegúrate de que `npm run dev` esté corriendo antes de acceder al sitio en desarrollo.
