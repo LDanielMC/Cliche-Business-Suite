@@ -1,0 +1,63 @@
+@startuml
+
+title Diagrama de Secuencia MVC - FN.05.01 Consulta y renovación del servicio
+
+actor "Administrador / Operador" as Admin
+actor "Cliente" as Cliente
+participant "Vista" as Vista
+participant "Controlador" as Controlador
+participant "Modelo" as Modelo
+
+== Consulta de renovaciones ==
+
+Admin -> Vista: Ingresa al módulo de renovaciones
+Vista -> Controlador: Solicitar listado de renovaciones
+Controlador -> Modelo: Obtener renovaciones con fechas y estados
+Modelo --> Controlador: Retorna renovaciones calculadas
+Controlador --> Vista: Mostrar tabla de renovaciones
+Vista --> Admin: Visualiza clientes, fechas y estados
+
+== Recordatorio de renovación ==
+
+alt Servicio próximo a vencer
+    Controlador -> Modelo: Generar recordatorio de renovación
+    Modelo --> Controlador: Recordatorio generado
+    Controlador -> Modelo: Enviar notificación al cliente
+    Modelo --> Controlador: Notificación enviada
+    Vista --> Cliente: Muestra aviso de renovación pendiente
+end
+
+== Cliente realiza el pago ==
+
+Cliente -> Vista: Ingresa al portal de pagos
+Vista --> Cliente: Muestra opciones de pago
+Cliente -> Vista: Confirma pago de renovación
+Vista -> Controlador: Enviar comprobante de pago
+
+== Admin registra el pago ==
+
+Admin -> Vista: Revisa pagos pendientes
+Vista -> Controlador: Solicitar pagos por confirmar
+Controlador -> Modelo: Obtener pagos reportados
+Modelo --> Controlador: Retorna pagos pendientes
+Controlador --> Vista: Mostrar listado de pagos
+Vista --> Admin: Visualiza pagos por confirmar
+
+Admin -> Vista: Confirma pago del cliente
+Vista -> Controlador: Enviar confirmación de pago
+Controlador -> Modelo: Registrar pago de renovación
+Modelo --> Controlador: Pago registrado
+
+== Renovación mensual ==
+
+Controlador -> Modelo: Extender vigencia del servicio un mes
+Modelo --> Controlador: Vigencia extendida
+Controlador -> Modelo: Calcular nueva fecha de vencimiento
+Modelo --> Controlador: Nueva fecha calculada
+Controlador -> Modelo: Establecer próximo recordatorio
+Modelo --> Controlador: Recordatorio configurado
+Controlador --> Vista: Mostrar mensaje de éxito
+Vista --> Admin: Confirma renovación completada
+Vista --> Cliente: Notifica servicio renovado
+
+@enduml

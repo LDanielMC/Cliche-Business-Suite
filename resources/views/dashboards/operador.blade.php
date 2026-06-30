@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Panel de Supervisor')
+@section('title', 'Panel de Operador')
 
 @section('styles')
 <style>
@@ -38,25 +38,25 @@
         font-size: 36px;
         font-weight: bold;
     }
-    .supervisor-section {
+    .operador-section {
         background: white;
         padding: 25px;
         border-radius: 10px;
         box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         margin-bottom: 20px;
     }
-    .supervisor-section h2 {
+    .operador-section h2 {
         color: #333;
         margin-bottom: 20px;
         padding-bottom: 10px;
         border-bottom: 2px solid #ffc107;
     }
-    .supervisor-grid {
+    .operador-grid {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
         gap: 15px;
     }
-    .supervisor-btn {
+    .operador-btn {
         padding: 15px 20px;
         background: #ffc107;
         color: #333;
@@ -68,7 +68,7 @@
         transition: background 0.3s;
         text-align: center;
     }
-    .supervisor-btn:hover {
+    .operador-btn:hover {
         background: #e0a800;
     }
     .session-info {
@@ -97,22 +97,22 @@
 
 @section('content')
 <div class="dashboard-header">
-    <h1>Panel de Supervisor</h1>
-    <p>Bienvenido, {{ $user->name }}. Puedes supervisar operaciones y gestionar equipos.</p>
+    <h1>Panel de Operador</h1>
+    <p>Bienvenido, {{ $user->name }}. Puedes operar el sistema y gestionar tareas.</p>
 </div>
 
 <div class="stats-grid">
     <div class="stat-card">
-        <h3>Equipos Supervisados</h3>
-        <div class="number">5</div>
-    </div>
-    <div class="stat-card">
-        <h3>Tareas Pendientes</h3>
+        <h3>Tareas Asignadas</h3>
         <div class="number">12</div>
     </div>
     <div class="stat-card">
-        <h3>Clientes Asignados</h3>
+        <h3>Clientes Atendidos</h3>
         <div class="number">{{ \App\Models\User::where('role', 'cliente')->count() }}</div>
+    </div>
+    <div class="stat-card">
+        <h3>Servicios Activos</h3>
+        <div class="number">5</div>
     </div>
     <div class="stat-card">
         <h3>Incidentes Hoy</h3>
@@ -120,17 +120,17 @@
     </div>
 </div>
 
-<div class="supervisor-section">
-    <h2>Gestion de Equipos</h2>
-    <div class="supervisor-grid">
-        <button class="supervisor-btn">Ver Equipos</button>
-        <button class="supervisor-btn">Asignar Tareas</button>
-        <button class="supervisor-btn">Desempeño</button>
-        <button class="supervisor-btn">Horarios</button>
+<div class="operador-section">
+    <h2>Gestion de Operaciones</h2>
+    <div class="operador-grid">
+        <button class="operador-btn">Ver Tareas</button>
+        <button class="operador-btn">Asignar Servicios</button>
+        <button class="operador-btn">Desempeño</button>
+        <button class="operador-btn">Horarios</button>
     </div>
 </div>
 
-<div class="supervisor-section">
+<div class="operador-section">
     <h2>Actividad Reciente</h2>
     <ul class="activity-list">
         <li>Hace 5 minutos - Se completo la tarea #1234</li>
@@ -141,7 +141,7 @@
 </div>
 
 <div class="session-info">
-    <p><strong>Rol:</strong> Supervisor</p>
+    <p><strong>Rol:</strong> Operador</p>
     <p><strong>Email:</strong> {{ $user->email }}</p>
     <p><strong>Sesion iniciada:</strong> {{ now()->format('d/m/Y H:i:s') }}</p>
 </div>

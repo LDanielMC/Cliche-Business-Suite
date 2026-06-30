@@ -55,7 +55,7 @@
             background: #dc3545;
             color: white;
         }
-        .role-supervisor {
+        .role-operador {
             background: #ffc107;
             color: #333;
         }

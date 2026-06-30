@@ -1,0 +1,52 @@
+@startuml
+
+title Diagrama de Secuencia MVC - FN.03.05 Eliminar y restaurar clientes
+
+actor "Administrador" as Admin
+participant "Vista" as Vista
+participant "Controlador" as Controlador
+participant "Modelo" as Modelo
+
+== Eliminar cliente ==
+
+Admin -> Vista: Selecciona "Eliminar cliente"
+Vista --> Admin: Solicita confirmación
+
+Admin -> Vista: Confirma eliminación
+Vista -> Controlador: Solicitar eliminación del cliente
+Controlador -> Modelo: Dar de baja al cliente
+Modelo --> Controlador: Cliente eliminado lógicamente
+Controlador --> Vista: Mostrar mensaje de éxito
+Vista --> Admin: Confirma baja del cliente
+
+== Ver clientes eliminados ==
+
+Admin -> Vista: Ingresa a "Clientes eliminados"
+Vista -> Controlador: Solicitar clientes eliminados
+Controlador -> Modelo: Obtener clientes dados de baja
+Modelo --> Controlador: Retorna clientes eliminados
+Controlador --> Vista: Mostrar listado de eliminados
+Vista --> Admin: Visualiza clientes eliminados
+
+== Restaurar cliente ==
+
+Admin -> Vista: Selecciona "Restaurar cliente"
+Vista -> Controlador: Solicitar restauración del cliente
+Controlador -> Modelo: Reactivar cliente
+Modelo --> Controlador: Cliente restaurado
+Controlador --> Vista: Mostrar mensaje de éxito
+Vista --> Admin: Confirma restauración exitosa
+
+== Eliminar cliente permanentemente ==
+
+Admin -> Vista: Selecciona "Eliminar permanentemente"
+Vista --> Admin: Solicita confirmación final
+
+Admin -> Vista: Confirma eliminación permanente
+Vista -> Controlador: Solicitar eliminación definitiva
+Controlador -> Modelo: Eliminar cliente y cuenta de usuario
+Modelo --> Controlador: Cliente y cuenta eliminados
+Controlador --> Vista: Mostrar mensaje de éxito
+Vista --> Admin: Confirma eliminación permanente
+
+@enduml

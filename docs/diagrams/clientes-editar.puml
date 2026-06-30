@@ -1,0 +1,24 @@
+@startuml
+
+title Diagrama de Secuencia MVC - FN.03.04 Editar cliente
+
+actor "Administrador" as Admin
+participant "Vista" as Vista
+participant "Controlador" as Controlador
+participant "Modelo" as Modelo
+
+Admin -> Vista: Selecciona "Editar cliente"
+Vista -> Controlador: Solicitar datos del cliente
+Controlador -> Modelo: Consultar datos del cliente
+Modelo --> Controlador: Retorna datos del cliente
+Controlador --> Vista: Mostrar formulario de edición
+Vista --> Admin: Muestra datos del cliente
+
+Admin -> Vista: Modifica datos del cliente
+Vista -> Controlador: Enviar cambios
+Controlador -> Modelo: Actualizar datos del cliente
+Modelo --> Controlador: Cliente actualizado
+Controlador --> Vista: Mostrar mensaje de éxito
+Vista --> Admin: Confirma actualización exitosa
+
+@enduml

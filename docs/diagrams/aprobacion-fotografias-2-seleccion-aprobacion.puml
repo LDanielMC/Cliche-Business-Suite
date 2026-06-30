@@ -1,0 +1,50 @@
+@startuml
+
+title Diagrama de Secuencia MVC - FN.04.02 Selección y aprobación de fotografías
+
+actor "Cliente" as Cliente
+actor "Administrador / Operador" as Admin
+participant "Vista" as Vista
+participant "Controlador" as Controlador
+participant "Modelo" as Modelo
+
+== Cliente responde a tiempo ==
+
+Cliente -> Vista: Ingresa al módulo de selección
+Vista -> Controlador: Solicitar fotografías pendientes
+Controlador -> Modelo: Obtener fotografías del ciclo mensual
+Modelo --> Controlador: Retorna fotografías propuestas
+Controlador --> Vista: Mostrar galería de fotografías
+Vista --> Cliente: Muestra fotografías disponibles
+
+Cliente -> Vista: Selecciona fotografías según su cuota
+Vista -> Controlador: Enviar fotografías seleccionadas
+Controlador -> Modelo: Registrar selección del cliente
+Modelo --> Controlador: Selección guardada
+Controlador --> Vista: Mostrar fotografías restantes
+Vista --> Cliente: Pregunta qué fotos conservar para futuros ciclos
+
+Cliente -> Vista: Define fotografías a conservar y descartar
+Vista -> Controlador: Enviar decisión del cliente
+Controlador -> Modelo: Actualizar estatus de cada fotografía
+Modelo --> Controlador: Estatus actualizado
+Controlador --> Vista: Confirmar selección final
+Vista --> Cliente: Muestra resumen de selección
+
+Controlador -> Modelo: Enviar fotografías aprobadas al Calendario de Fotos
+Modelo --> Controlador: Fotografías programadas
+Controlador --> Vista: Mostrar mensaje de programación
+Vista --> Cliente: Notifica que las fotografías fueron programadas
+
+== Cliente no responde a tiempo ==
+
+alt Fecha límite alcanzada sin respuesta
+    Controlador -> Modelo: Aprobar automáticamente fotografías necesarias
+    Modelo --> Controlador: Fotografías aprobadas automáticamente
+    Controlador -> Modelo: Enviar fotografías aprobadas al Calendario de Fotos
+    Modelo --> Controlador: Fotografías programadas
+    Controlador --> Vista: Mostrar mensaje de aprobación automática
+    Vista --> Cliente: Notifica aprobación automática y programación
+end
+
+@enduml

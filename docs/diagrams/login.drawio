@@ -1,0 +1,119 @@
+<mxGraphModel dx="1212" dy="661" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+  <root>
+    <mxCell id="login-0" />
+    <mxCell id="login-1" parent="login-0" />
+    <mxCell id="login-frame" value="FN1. Inicio de sesión" style="shape=umlFrame;whiteSpace=wrap;html=1;pointerEvents=0;width=180;height=20;" vertex="1" parent="login-1">
+      <mxGeometry x="40" y="40" width="1020" height="640" as="geometry" />
+    </mxCell>
+    <mxCell id="login-swimlane" value="" style="swimlane;html=1;childLayout=stackLayout;startSize=20;rounded=0;shadow=0;comic=0;labelBackgroundColor=none;strokeWidth=1;fontFamily=Verdana;fontSize=12;align=center;" vertex="1" parent="login-1">
+      <mxGeometry x="50" y="80" width="1020" height="600" as="geometry" />
+    </mxCell>
+    <mxCell id="lane-user" value="Usuario" style="swimlane;html=1;startSize=20;" vertex="1" parent="login-swimlane">
+      <mxGeometry y="20" width="250" height="580" as="geometry" />
+    </mxCell>
+    <mxCell id="lane-view" value="Vista" style="swimlane;html=1;startSize=20;" vertex="1" parent="login-swimlane">
+      <mxGeometry x="250" y="20" width="270" height="580" as="geometry" />
+    </mxCell>
+    <mxCell id="lane-controller" value="Controlador" style="swimlane;html=1;startSize=20;" vertex="1" parent="login-swimlane">
+      <mxGeometry x="520" y="20" width="250" height="580" as="geometry" />
+    </mxCell>
+    <mxCell id="lane-model" value="Modelo" style="swimlane;html=1;startSize=20;" vertex="1" parent="login-swimlane">
+      <mxGeometry x="770" y="20" width="250" height="580" as="geometry" />
+    </mxCell>
+
+    <!-- Nodos Usuario -->
+    <mxCell id="start" value="" style="ellipse;whiteSpace=wrap;html=1;rounded=0;shadow=0;comic=0;labelBackgroundColor=none;strokeWidth=1;fillColor=#000000;fontFamily=Verdana;fontSize=12;align=center;" vertex="1" parent="login-1">
+      <mxGeometry x="150" y="120" width="40" height="40" as="geometry" />
+    </mxCell>
+    <mxCell id="enter-credentials" value="Ingresar correo y contraseña" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="login-1">
+      <mxGeometry x="110" y="200" width="120" height="60" as="geometry" />
+    </mxCell>
+    <mxCell id="end-success" value="" style="shape=mxgraph.bpmn.shape;html=1;verticalLabelPosition=bottom;labelBackgroundColor=#ffffff;verticalAlign=top;perimeter=ellipsePerimeter;outline=end;symbol=terminate;rounded=0;shadow=0;comic=0;strokeWidth=1;fontFamily=Verdana;fontSize=12;align=center;" vertex="1" parent="login-1">
+      <mxGeometry x="150" y="560" width="40" height="40" as="geometry" />
+    </mxCell>
+    <mxCell id="end-error" value="" style="shape=mxgraph.bpmn.shape;html=1;verticalLabelPosition=bottom;labelBackgroundColor=#ffffff;verticalAlign=top;perimeter=ellipsePerimeter;outline=end;symbol=terminate;rounded=0;shadow=0;comic=0;strokeWidth=1;fontFamily=Verdana;fontSize=12;align=center;" vertex="1" parent="login-1">
+      <mxGeometry x="150" y="460" width="40" height="40" as="geometry" />
+    </mxCell>
+
+    <!-- Nodos Vista -->
+    <mxCell id="show-login" value="Mostrar formulario de inicio de sesión" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="login-1">
+      <mxGeometry x="350" y="120" width="120" height="60" as="geometry" />
+    </mxCell>
+    <mxCell id="show-error" value="Mostrar mensaje de error" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="login-1">
+      <mxGeometry x="350" y="440" width="120" height="60" as="geometry" />
+    </mxCell>
+    <mxCell id="redirect-role" value="Redirigir según el rol" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="login-1">
+      <mxGeometry x="350" y="540" width="120" height="60" as="geometry" />
+    </mxCell>
+
+    <!-- Nodos Controlador -->
+    <mxCell id="receive-login" value="Recibir credenciales" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="login-1">
+      <mxGeometry x="600" y="200" width="120" height="60" as="geometry" />
+    </mxCell>
+    <mxCell id="validate-credentials" value="Validar credenciales" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="login-1">
+      <mxGeometry x="600" y="300" width="120" height="60" as="geometry" />
+    </mxCell>
+    <mxCell id="valid-decision" value="¿Son válidas?" style="rhombus;whiteSpace=wrap;html=1;" vertex="1" parent="login-1">
+      <mxGeometry x="620" y="400" width="80" height="80" as="geometry" />
+    </mxCell>
+    <mxCell id="create-session" value="Regenerar sesión y redirigir" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="login-1">
+      <mxGeometry x="600" y="520" width="120" height="60" as="geometry" />
+    </mxCell>
+
+    <!-- Nodos Modelo -->
+    <mxCell id="find-user" value="Buscar usuario por credenciales" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="login-1">
+      <mxGeometry x="850" y="300" width="120" height="60" as="geometry" />
+    </mxCell>
+
+    <!-- Conexiones -->
+    <mxCell id="e1" edge="1" parent="login-1" source="start" target="show-login">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="e2" edge="1" parent="login-1" source="show-login" target="enter-credentials">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="e3" edge="1" parent="login-1" source="enter-credentials" target="receive-login">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="e4" edge="1" parent="login-1" source="receive-login" target="validate-credentials">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="e5" edge="1" parent="login-1" source="validate-credentials" target="find-user">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="e6" edge="1" parent="login-1" source="find-user" target="valid-decision">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="e7" edge="1" parent="login-1" source="valid-decision" target="create-session">
+      <mxGeometry relative="1" as="geometry">
+        <Array as="points">
+          <mxPoint x="720" y="440" />
+          <mxPoint x="720" y="550" />
+        </Array>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="label-yes" value="Sí" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" parent="e7">
+      <mxGeometry relative="1" x="-0.2" y="-10" as="geometry" />
+    </mxCell>
+    <mxCell id="e8" edge="1" parent="login-1" source="valid-decision" target="show-error">
+      <mxGeometry relative="1" as="geometry">
+        <Array as="points">
+          <mxPoint x="580" y="440" />
+          <mxPoint x="580" y="470" />
+        </Array>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="label-no" value="No" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" parent="e8">
+      <mxGeometry relative="1" x="-0.2" y="-10" as="geometry" />
+    </mxCell>
+    <mxCell id="e9" edge="1" parent="login-1" source="show-error" target="end-error">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="e10" edge="1" parent="login-1" source="create-session" target="redirect-role">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="e11" edge="1" parent="login-1" source="redirect-role" target="end-success">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+  </root>
+</mxGraphModel>

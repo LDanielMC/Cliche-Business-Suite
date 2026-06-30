@@ -18,12 +18,12 @@ class UserSeeder extends Seeder
             'role' => User::ROLE_ADMIN,
         ]);
 
-        // Usuario Supervisor
+        // Usuario Operador
         User::create([
-            'name' => 'Supervisor',
-            'email' => 'supervisor@sistema.com',
+            'name' => 'Operador',
+            'email' => 'operador@sistema.com',
             'password' => Hash::make('password123'),
-            'role' => User::ROLE_SUPERVISOR,
+            'role' => User::ROLE_OPERADOR,
         ]);
 
         // Usuario Cliente

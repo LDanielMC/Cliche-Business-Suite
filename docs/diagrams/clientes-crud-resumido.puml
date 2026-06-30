@@ -1,0 +1,56 @@
+@startuml
+
+title Diagrama de Secuencia MVC - FN.02 Gestión de clientes (CRUD resumido)
+
+actor "Administrador" as Admin
+participant "Vista" as Vista
+participant "Controlador" as Controlador
+participant "Modelo" as Modelo
+
+== Listar clientes ==
+
+Admin -> Vista: Ingresa al módulo de clientes
+Vista -> Controlador: Solicitar listado
+Controlador -> Modelo: Obtener clientes
+Modelo --> Controlador: Retorna clientes
+Controlador --> Vista: Mostrar listado
+Vista --> Admin: Visualiza clientes
+
+== Crear cliente ==
+
+Admin -> Vista: Nuevo cliente
+Vista --> Admin: Muestra formulario
+Admin -> Vista: Guarda datos
+Vista -> Controlador: Enviar datos
+Controlador -> Modelo: Registrar cliente
+Modelo --> Controlador: Cliente registrado
+Controlador --> Vista: Mensaje de éxito
+Vista --> Admin: Confirma registro
+
+== Editar cliente ==
+
+Admin -> Vista: Editar cliente
+Vista -> Controlador: Solicitar datos
+Controlador -> Modelo: Consultar cliente
+Modelo --> Controlador: Retorna cliente
+Controlador --> Vista: Mostrar formulario
+Vista --> Admin: Muestra datos
+Admin -> Vista: Guarda cambios
+Vista -> Controlador: Enviar cambios
+Controlador -> Modelo: Actualizar cliente
+Modelo --> Controlador: Cliente actualizado
+Controlador --> Vista: Mensaje de éxito
+Vista --> Admin: Confirma actualización
+
+== Eliminar cliente ==
+
+Admin -> Vista: Eliminar cliente
+Vista --> Admin: Solicita confirmación
+Admin -> Vista: Confirma eliminación
+Vista -> Controlador: Solicitar eliminación
+Controlador -> Modelo: Dar de baja cliente
+Modelo --> Controlador: Cliente dado de baja
+Controlador --> Vista: Mensaje de éxito
+Vista --> Admin: Confirma eliminación
+
+@enduml

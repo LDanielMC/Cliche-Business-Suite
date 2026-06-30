@@ -99,19 +99,19 @@
         <div class="number">{{ \App\Models\User::where('role', 'admin')->count() }}</div>
     </div>
     <div class="stat-card">
-        <h3>Supervisores</h3>
-        <div class="number">{{ \App\Models\User::where('role', 'supervisor')->count() }}</div>
+        <h3>Operadores</h3>
+        <div class="number">{{ \App\Models\User::where('role', 'operador')->count() }}</div>
     </div>
     <div class="stat-card">
         <h3>Clientes</h3>
-        <div class="number">{{ \App\Models\User::where('role', 'cliente')->count() }}</div>
+        <div class="number">{{ \App\Models\Cliente::count() }}</div>
     </div>
 </div>
 
 <div class="admin-section">
     <h2>Gestion del Sistema</h2>
     <div class="admin-grid">
-        <button class="admin-btn">Gestionar Usuarios</button>
+        <a href="{{ route('clientes.index') }}" class="admin-btn">Gestionar Clientes</a>
         <button class="admin-btn">Configuracion</button>
         <button class="admin-btn">Reportes</button>
         <button class="admin-btn">Auditoria</button>

@@ -1,0 +1,24 @@
+@startuml
+
+title Diagrama de Secuencia MVC - FN.03.02 Crear cliente
+
+actor "Administrador" as Admin
+participant "Vista" as Vista
+participant "Controlador" as Controlador
+participant "Modelo" as Modelo
+
+Admin -> Vista: Selecciona "Nuevo cliente"
+Vista --> Admin: Muestra formulario de registro
+
+Admin -> Vista: Captura datos del cliente
+Vista -> Controlador: Enviar formulario de registro
+Controlador -> Modelo: Crear cuenta de usuario
+Modelo --> Controlador: Cuenta de usuario creada
+Controlador -> Modelo: Guardar información del cliente
+Modelo --> Controlador: Cliente registrado
+Controlador -> Modelo: Enviar correo de activación
+Modelo --> Controlador: Correo de activación enviado
+Controlador --> Vista: Mostrar mensaje de éxito
+Vista --> Admin: Confirma registro exitoso
+
+@enduml

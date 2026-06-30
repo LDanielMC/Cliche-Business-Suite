@@ -1,0 +1,17 @@
+@startuml
+
+title Diagrama de Secuencia MVC - FN.03.03 Ver detalle del cliente
+
+actor "Administrador" as Admin
+participant "Vista" as Vista
+participant "Controlador" as Controlador
+participant "Modelo" as Modelo
+
+Admin -> Vista: Selecciona "Ver cliente"
+Vista -> Controlador: Solicitar información del cliente
+Controlador -> Modelo: Consultar datos del cliente
+Modelo --> Controlador: Retorna datos del cliente
+Controlador --> Vista: Mostrar detalle del cliente
+Vista --> Admin: Visualiza información del cliente
+
+@enduml

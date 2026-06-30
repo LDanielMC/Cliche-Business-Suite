@@ -1,0 +1,31 @@
+@startuml
+
+title Diagrama de Secuencia MVC - FN.04.01 Carga y notificación de fotografías
+
+actor "Administrador / Operador" as Admin
+actor "Cliente" as Cliente
+participant "Vista" as Vista
+participant "Controlador" as Controlador
+participant "Modelo" as Modelo
+
+Admin -> Vista: Ingresa al módulo de aprobación de fotografías
+Vista -> Controlador: Solicitar información del cliente
+Controlador -> Modelo: Consultar datos del cliente
+Modelo --> Controlador: Retorna datos del cliente y cuota mensual
+Controlador --> Vista: Mostrar panel de carga
+Vista --> Admin: Muestra formulario de carga
+
+Admin -> Vista: Carga fotografías de la sesión
+Vista -> Controlador: Enviar fotografías propuestas
+Controlador -> Modelo: Guardar fotografías propuestas
+Modelo --> Controlador: Fotografías guardadas
+Controlador --> Vista: Confirmar carga exitosa
+Vista --> Admin: Muestra mensaje de éxito
+
+Controlador -> Modelo: Notificar cliente para selección
+Modelo --> Controlador: Notificación enviada
+Controlador --> Vista: Mostrar resumen de fotografías cargadas
+Vista --> Admin: Confirma envío de notificación
+Vista --> Cliente: Muestra notificación de fotografías pendientes
+
+@enduml

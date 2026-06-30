@@ -73,15 +73,31 @@
         transform: translateY(-2px);
         box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
     }
-    .remember-me {
+    .password-wrapper {
+        position: relative;
+    }
+    .password-wrapper .form-control {
+        padding-right: 45px;
+    }
+    .toggle-password {
+        position: absolute;
+        right: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: none;
+        border: none;
+        cursor: pointer;
+        color: #667eea;
+        font-size: 18px;
+        padding: 0;
+        width: 24px;
+        height: 24px;
         display: flex;
         align-items: center;
-        gap: 8px;
-        margin-bottom: 20px;
+        justify-content: center;
     }
-    .remember-me input {
-        width: 18px;
-        height: 18px;
+    .toggle-password:hover {
+        color: #764ba2;
     }
     .info-text {
         text-align: center;
@@ -120,17 +136,17 @@
 
             <div class="form-group">
                 <label for="password">Contraseña</label>
-                <input type="password"
-                       id="password"
-                       name="password"
-                       class="form-control"
-                       required
-                       placeholder="Tu contraseña">
-            </div>
-
-            <div class="remember-me">
-                <input type="checkbox" id="remember" name="remember">
-                <label for="remember">Recordarme</label>
+                <div class="password-wrapper">
+                    <input type="password"
+                           id="password"
+                           name="password"
+                           class="form-control"
+                           required
+                           placeholder="Tu contraseña">
+                    <button type="button" class="toggle-password" id="togglePassword" title="Mostrar contraseña">
+                        <svg id="eyeIcon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                    </button>
+                </div>
             </div>
 
             <button type="submit" class="btn-login">
@@ -139,8 +155,25 @@
         </form>
 
         <div class="info-text">
+            <p><a href="{{ route('password.request') }}" style="color: #667eea; text-decoration: none;">¿Olvidaste tu contraseña?</a></p>
             <p>Sesion expira despues de 10 minutos de inactividad</p>
         </div>
     </div>
 </div>
+
+<script>
+    const togglePassword = document.getElementById('togglePassword');
+    const passwordInput = document.getElementById('password');
+    const eyeIcon = document.getElementById('eyeIcon');
+
+    const eyeOpen = '<path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"></path><circle cx="12" cy="12" r="3"></circle>';
+    const eyeClosed = '<path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"></path><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"></path><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"></path><line x1="2" x2="22" y1="2" y2="22"></line>';
+
+    togglePassword.addEventListener('click', function () {
+        const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+        passwordInput.setAttribute('type', type);
+        eyeIcon.innerHTML = type === 'password' ? eyeOpen : eyeClosed;
+        togglePassword.setAttribute('title', type === 'password' ? 'Mostrar contraseña' : 'Ocultar contraseña');
+    });
+</script>
 @endsection

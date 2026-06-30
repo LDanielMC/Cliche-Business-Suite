@@ -1,0 +1,17 @@
+@startuml
+
+title Diagrama de Secuencia MVC - FN.03.01 Listar clientes
+
+actor "Administrador" as Admin
+participant "Vista" as Vista
+participant "Controlador" as Controlador
+participant "Modelo" as Modelo
+
+Admin -> Vista: Ingresa al módulo de clientes
+Vista -> Controlador: Solicitar listado de clientes
+Controlador -> Modelo: Obtener clientes activos
+Modelo --> Controlador: Retorna listado de clientes
+Controlador --> Vista: Mostrar tabla de clientes
+Vista --> Admin: Visualiza clientes registrados
+
+@enduml

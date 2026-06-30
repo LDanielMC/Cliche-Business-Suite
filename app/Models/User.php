@@ -10,8 +10,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-#[Fillable(['name', 'email', 'password', 'role'])]
-#[Hidden(['password', 'remember_token'])]
+#[Fillable(['name', 'email', 'password', 'role', 'activation_token', 'activation_expires_at'])]
+#[Hidden(['password', 'remember_token', 'activation_token'])]
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
@@ -19,12 +19,12 @@ class User extends Authenticatable
 
     const ROLE_ADMIN = 'admin';
     const ROLE_CLIENTE = 'cliente';
-    const ROLE_SUPERVISOR = 'supervisor';
+    const ROLE_OPERADOR = 'operador';
 
     const ROLES = [
         self::ROLE_ADMIN,
         self::ROLE_CLIENTE,
-        self::ROLE_SUPERVISOR,
+        self::ROLE_OPERADOR,
     ];
 
     /**
@@ -36,6 +36,7 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
+            'activation_expires_at' => 'datetime',
             'password' => 'hashed',
         ];
     }
@@ -50,9 +51,9 @@ class User extends Authenticatable
         return $this->role === self::ROLE_CLIENTE;
     }
 
-    public function isSupervisor(): bool
+    public function isOperador(): bool
     {
-        return $this->role === self::ROLE_SUPERVISOR;
+        return $this->role === self::ROLE_OPERADOR;
     }
 
     public function hasRole(string $role): bool

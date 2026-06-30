@@ -1,0 +1,45 @@
+@startuml
+
+title Diagrama de Secuencia MVC - FN.05.02 Suspensión y cancelación de renovaciones
+
+actor "Administrador / Operador" as Admin
+actor "Cliente" as Cliente
+participant "Vista" as Vista
+participant "Controlador" as Controlador
+participant "Modelo" as Modelo
+
+== Cliente no paga a tiempo ==
+
+alt Fecha de vencimiento alcanzada sin pago
+    Controlador -> Modelo: Suspender servicio del cliente
+    Modelo --> Controlador: Servicio suspendido
+    Controlador --> Vista: Mostrar alerta de suspensión
+    Vista --> Admin: Notifica cliente suspendido
+    Vista --> Cliente: Notifica servicio suspendido
+end
+
+== Cliente sigue sin pagar ==
+
+alt Período de gracia terminado sin pago
+    Controlador -> Modelo: Cancelar suscripción del cliente
+    Modelo --> Controlador: Suscripción cancelada
+    Controlador --> Vista: Mostrar confirmación de cancelación
+    Vista --> Admin: Notifica suscripción cancelada
+    Vista --> Cliente: Notifica cancelación del servicio
+end
+
+== Cliente regulariza el servicio ==
+
+alt Cliente paga después de la suspensión
+    Cliente -> Vista: Realiza pago de regularización
+    Vista -> Controlador: Enviar comprobante de pago
+    Admin -> Vista: Confirma pago recibido
+    Vista -> Controlador: Enviar confirmación de pago
+    Controlador -> Modelo: Reactivar suscripción y extender vigencia
+    Modelo --> Controlador: Suscripción reactivada
+    Controlador --> Vista: Mostrar mensaje de éxito
+    Vista --> Admin: Confirma servicio regularizado
+    Vista --> Cliente: Notifica servicio activo nuevamente
+end
+
+@enduml

@@ -1,0 +1,28 @@
+@startuml
+
+title Diagrama de Secuencia MVC - FN.01 Inicio de sesión
+
+actor "Usuario" as Usuario
+participant "Vista" as Vista
+participant "Controlador" as Controlador
+participant "Modelo" as Modelo
+
+== Inicio de sesión ==
+
+Usuario -> Vista: Ingresa a la página de login
+Vista --> Usuario: Muestra formulario de inicio de sesión
+
+Usuario -> Vista: Ingresa correo y contraseña
+Vista -> Controlador: Enviar credenciales
+Controlador -> Modelo: Verificar credenciales
+Modelo --> Controlador: Resultado de la verificación
+
+alt Credenciales válidas
+    Controlador --> Vista: Iniciar sesión y redirigir al dashboard
+    Vista --> Usuario: Muestra la pantalla principal del sistema
+else Credenciales inválidas
+    Controlador --> Vista: Enviar mensaje de error
+    Vista --> Usuario: Muestra "Credenciales incorrectas"
+end
+
+@enduml
