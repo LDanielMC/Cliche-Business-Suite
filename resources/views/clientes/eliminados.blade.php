@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Clientes Eliminados')
+@section('title', 'Clientes dados de baja')
 
 @section('styles')
 <style>
@@ -28,7 +28,7 @@
 @section('content')
 <div class="clientes-container">
     <div class="page-header">
-        <h1>Clientes Eliminados</h1>
+        <h1>Clientes dados de baja</h1>
         <a href="{{ route('clientes.index') }}" class="btn-secondary">Volver a Clientes</a>
     </div>
 
@@ -41,7 +41,7 @@
                         <th>Negocio</th>
                         <th>Contacto</th>
                         <th>Email</th>
-                        <th>Eliminado el</th>
+                        <th>Fecha de baja</th>
                         <th>Estado</th>
                         <th>Acciones</th>
                     </tr>
@@ -52,8 +52,8 @@
                             <td>{{ $cliente->nombre_negocio }}</td>
                             <td>{{ $cliente->user->name }}</td>
                             <td>{{ $cliente->user->email }}</td>
-                            <td>{{ $cliente->deleted_at->format('d/m/Y H:i') }}</td>
-                            <td><span class="badge-eliminado">Eliminado</span></td>
+                            <td>{{ $cliente->user->fecha_baja ? $cliente->user->fecha_baja->format('d/m/Y') : 'N/A' }}</td>
+                            <td><span class="badge-eliminado">Dado de baja</span></td>
                             <td class="actions">
                                 <form action="{{ route('clientes.restaurar', $cliente->id) }}" method="POST">
                                     @csrf
@@ -77,7 +77,7 @@
         </div>
     @else
         <div class="empty-state">
-            <h3>No hay clientes eliminados</h3>
+            <h3>No hay clientes dados de baja</h3>
         </div>
     @endif
 </div>

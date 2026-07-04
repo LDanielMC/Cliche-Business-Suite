@@ -22,8 +22,11 @@
     th { background: #f8f9fa; color: #666; font-size: 13px; text-transform: uppercase; }
     tr:hover { background: #f8f9fa; }
     .actions { display: flex; gap: 6px; }
-    .badge { padding: 5px 10px; border-radius: 5px; font-size: 12px; font-weight: 500; }
+    .badge { padding: 5px 10px; border-radius: 5px; font-size: 12px; font-weight: 500; text-transform: capitalize; }
     .badge-activo { background: #d4edda; color: #155724; }
+    .badge-inactivo { background: #fff3cd; color: #856404; }
+    .badge-suspendido { background: #f8d7da; color: #721c24; }
+    .badge-baja { background: #f8d7da; color: #721c24; }
     .empty-state { text-align: center; padding: 50px; color: #666; }
     .pagination { margin-top: 20px; }
 </style>
@@ -34,7 +37,7 @@
     <div class="page-header">
         <h1>Gestión de Clientes</h1>
         <div>
-            <a href="{{ route('clientes.eliminados') }}" class="btn-secondary" style="margin-right: 10px;">Clientes Eliminados</a>
+            <a href="{{ route('clientes.eliminados') }}" class="btn-secondary" style="margin-right: 10px;">Clientes dados de baja</a>
             <a href="{{ route('clientes.create') }}" class="btn-primary">+ Nuevo Cliente</a>
         </div>
     </div>
@@ -66,14 +69,24 @@
                             <td>{{ $cliente->cantidad_fotos }}</td>
                             <td>${{ number_format($cliente->precio_mensual, 2) }}</td>
                             <td>{{ $cliente->fecha_registro->format('d/m/Y') }}</td>
-                            <td><span class="badge badge-activo">Activo</span></td>
+                            <td>
+                                @if($cliente->user->estatus === 'activo')
+                                    <span class="badge badge-activo">Activo</span>
+                                @elseif($cliente->user->estatus === 'inactivo')
+                                    <span class="badge badge-inactivo">Inactivo</span>
+                                @elseif($cliente->user->estatus === 'suspendido')
+                                    <span class="badge badge-suspendido">Suspendido</span>
+                                @elseif($cliente->user->estatus === 'dado_de_baja')
+                                    <span class="badge badge-baja">Dado de baja</span>
+                                @endif
+                            </td>
                             <td class="actions">
                                 <a href="{{ route('clientes.show', $cliente) }}" class="btn-secondary">Ver</a>
                                 <a href="{{ route('clientes.edit', $cliente) }}" class="btn-warning">Editar</a>
-                                <form action="{{ route('clientes.destroy', $cliente) }}" method="POST" onsubmit="return confirm('¿Estás seguro de eliminar este cliente?');">
+                                <form action="{{ route('clientes.destroy', $cliente) }}" method="POST" onsubmit="return confirm('¿Estás seguro de dar de baja este cliente?');">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="btn-danger">Eliminar</button>
+                                    <button type="submit" class="btn-danger">Dar de baja</button>
                                 </form>
                             </td>
                         </tr>

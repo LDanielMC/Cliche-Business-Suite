@@ -499,15 +499,15 @@
                 <div class="action-group">
                     <div class="action-group-title">Administración del Sistema</div>
                     <div class="actions-row">
-                        <div class="action-card disabled">
+                        <a href="{{ route('operadores.index') }}" class="action-card">
                             <div class="action-icon">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M20 8v6"></path><path d="M23 11h-6"></path></svg>
                             </div>
                             <div class="action-content">
-                                <div class="action-title">Crear Usuario</div>
-                                <div class="action-desc">Nuevo usuario del sistema</div>
+                                <div class="action-title">Gestionar Operadores</div>
+                                <div class="action-desc">Alta, baja y edición de operadores</div>
                             </div>
-                        </div>
+                        </a>
                         <div class="action-card disabled">
                             <div class="action-icon">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>

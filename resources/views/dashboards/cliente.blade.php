@@ -44,7 +44,7 @@
         grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
         gap: 15px;
     }
-    .cliente-btn {
+    .cliente-btn, .cliente-link {
         padding: 15px 20px;
         background: #28a745;
         color: white;
@@ -55,8 +55,10 @@
         font-weight: bold;
         transition: background 0.3s;
         text-align: center;
+        text-decoration: none;
+        display: inline-block;
     }
-    .cliente-btn:hover {
+    .cliente-btn:hover, .cliente-link:hover {
         background: #218838;
     }
     .info-card {
@@ -103,7 +105,7 @@
         <button class="cliente-btn">Mis Pedidos</button>
         <button class="cliente-btn">Facturas</button>
         <button class="cliente-btn">Soporte</button>
-        <button class="cliente-btn">Mi Perfil</button>
+        <a href="{{ route('clientes.perfil') }}" class="cliente-link">Mi Perfil</a>
     </div>
 </div>
 

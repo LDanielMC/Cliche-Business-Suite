@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-#[Fillable(['name', 'email', 'password', 'role', 'activation_token', 'activation_expires_at'])]
+#[Fillable(['name', 'email', 'password', 'role', 'nombres', 'apellido_paterno', 'apellido_materno', 'telefono', 'estatus', 'fecha_baja', 'activation_token', 'activation_expires_at'])]
 #[Hidden(['password', 'remember_token', 'activation_token'])]
 class User extends Authenticatable
 {
@@ -27,6 +27,18 @@ class User extends Authenticatable
         self::ROLE_OPERADOR,
     ];
 
+    const ESTATUS_ACTIVO = 'activo';
+    const ESTATUS_INACTIVO = 'inactivo';
+    const ESTATUS_SUSPENDIDO = 'suspendido';
+    const ESTATUS_DADO_DE_BAJA = 'dado_de_baja';
+
+    const ESTATUS = [
+        self::ESTATUS_ACTIVO,
+        self::ESTATUS_INACTIVO,
+        self::ESTATUS_SUSPENDIDO,
+        self::ESTATUS_DADO_DE_BAJA,
+    ];
+
     /**
      * Get the attributes that should be cast.
      *
@@ -37,6 +49,7 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'activation_expires_at' => 'datetime',
+            'fecha_baja' => 'date',
             'password' => 'hashed',
         ];
     }
@@ -59,5 +72,25 @@ class User extends Authenticatable
     public function hasRole(string $role): bool
     {
         return $this->role === $role;
+    }
+
+    /**
+     * Generate the display name from the person's names and surnames.
+     */
+    protected static function boot(): void
+    {
+        parent::boot();
+
+        static::saving(function ($user) {
+            $parts = array_filter([
+                trim($user->nombres ?? ''),
+                trim($user->apellido_paterno ?? ''),
+                trim($user->apellido_materno ?? ''),
+            ]);
+
+            if (!empty($parts)) {
+                $user->name = implode(' ', $parts);
+            }
+        });
     }
 }

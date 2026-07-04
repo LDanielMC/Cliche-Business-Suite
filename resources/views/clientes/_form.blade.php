@@ -24,9 +24,25 @@
 
 <div class="form-row">
     <div class="form-group col-2">
-        <label for="name">Nombre de Contacto *</label>
-        <input type="text" id="name" name="name" class="form-control @error('name') error @enderror" value="{{ old('name', $cliente->user->name ?? '') }}" required>
-        @error('name')
+        <label for="nombres">Nombres del Contacto *</label>
+        <input type="text" id="nombres" name="nombres" class="form-control @error('nombres') error @enderror" value="{{ old('nombres', $cliente->user->nombres ?? '') }}" required>
+        @error('nombres')
+            <span class="error-message">{{ $message }}</span>
+        @enderror
+    </div>
+
+    <div class="form-group col-2">
+        <label for="apellido_paterno">Apellido Paterno *</label>
+        <input type="text" id="apellido_paterno" name="apellido_paterno" class="form-control @error('apellido_paterno') error @enderror" value="{{ old('apellido_paterno', $cliente->user->apellido_paterno ?? '') }}" required>
+        @error('apellido_paterno')
+            <span class="error-message">{{ $message }}</span>
+        @enderror
+    </div>
+
+    <div class="form-group col-2">
+        <label for="apellido_materno">Apellido Materno</label>
+        <input type="text" id="apellido_materno" name="apellido_materno" class="form-control @error('apellido_materno') error @enderror" value="{{ old('apellido_materno', $cliente->user->apellido_materno ?? '') }}">
+        @error('apellido_materno')
             <span class="error-message">{{ $message }}</span>
         @enderror
     </div>

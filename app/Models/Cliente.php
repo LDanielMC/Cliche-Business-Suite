@@ -5,11 +5,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Cliente extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory;
 
     protected $fillable = [
         'user_id',
@@ -27,7 +26,6 @@ class Cliente extends Model
         return [
             'fecha_registro' => 'datetime',
             'precio_mensual' => 'decimal:2',
-            'deleted_at' => 'datetime',
         ];
     }
 
@@ -38,11 +36,16 @@ class Cliente extends Model
 
     public function scopeActivos($query)
     {
-        return $query->whereNull('deleted_at');
+        return $query->whereHas('user', fn ($q) => $q->where('estatus', User::ESTATUS_ACTIVO));
     }
 
-    public function scopeEliminados($query)
+    public function scopeInactivos($query)
     {
-        return $query->whereNotNull('deleted_at');
+        return $query->whereHas('user', fn ($q) => $q->where('estatus', User::ESTATUS_INACTIVO));
+    }
+
+    public function scopeDadosDeBaja($query)
+    {
+        return $query->whereHas('user', fn ($q) => $q->where('estatus', User::ESTATUS_DADO_DE_BAJA));
     }
 }

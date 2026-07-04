@@ -66,7 +66,17 @@
             </div>
             <div class="info-item">
                 <label>Estado</label>
-                <p><span style="background: #d4edda; color: #155724; padding: 5px 10px; border-radius: 5px; font-size: 12px;">Activo</span></p>
+                <p>
+                    @if($cliente->user->estatus === 'activo')
+                        <span style="background: #d4edda; color: #155724; padding: 5px 10px; border-radius: 5px; font-size: 12px;">Activo</span>
+                    @elseif($cliente->user->estatus === 'inactivo')
+                        <span style="background: #fff3cd; color: #856404; padding: 5px 10px; border-radius: 5px; font-size: 12px;">Inactivo</span>
+                    @elseif($cliente->user->estatus === 'suspendido')
+                        <span style="background: #f8d7da; color: #721c24; padding: 5px 10px; border-radius: 5px; font-size: 12px;">Suspendido</span>
+                    @elseif($cliente->user->estatus === 'dado_de_baja')
+                        <span style="background: #f8d7da; color: #721c24; padding: 5px 10px; border-radius: 5px; font-size: 12px;">Dado de baja</span>
+                    @endif
+                </p>
             </div>
         </div>
 

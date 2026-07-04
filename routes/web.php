@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ClienteController;
+use App\Http\Controllers\OperadorController;
 use App\Models\User;
 use Illuminate\Support\Facades\Route;
 
@@ -46,6 +47,15 @@ Route::middleware(['auth', 'session.timeout'])->group(function () {
         Route::get('/admin/clientes-eliminados', [ClienteController::class, 'eliminados'])->name('clientes.eliminados');
         Route::post('/admin/clientes/{id}/restaurar', [ClienteController::class, 'restaurar'])->name('clientes.restaurar');
         Route::delete('/admin/clientes/{id}/force-delete', [ClienteController::class, 'forceDestroy'])->name('clientes.forceDelete');
+
+        // Gestión de Operadores
+        Route::get('/admin/operadores', [OperadorController::class, 'index'])->name('operadores.index');
+        Route::get('/admin/operadores/create', [OperadorController::class, 'create'])->name('operadores.create');
+        Route::post('/admin/operadores', [OperadorController::class, 'store'])->name('operadores.store');
+        Route::get('/admin/operadores/{operador}', [OperadorController::class, 'show'])->name('operadores.show');
+        Route::get('/admin/operadores/{operador}/edit', [OperadorController::class, 'edit'])->name('operadores.edit');
+        Route::put('/admin/operadores/{operador}', [OperadorController::class, 'update'])->name('operadores.update');
+        Route::delete('/admin/operadores/{operador}', [OperadorController::class, 'destroy'])->name('operadores.destroy');
     });
 
     // Dashboard de Operador
@@ -57,4 +67,8 @@ Route::middleware(['auth', 'session.timeout'])->group(function () {
     Route::get('/cliente/dashboard', [AuthController::class, 'clienteDashboard'])
         ->middleware('role:' . User::ROLE_CLIENTE)
         ->name('cliente.dashboard');
+
+    Route::get('/cliente/perfil', [ClienteController::class, 'perfil'])
+        ->middleware('role:' . User::ROLE_CLIENTE)
+        ->name('clientes.perfil');
 });
