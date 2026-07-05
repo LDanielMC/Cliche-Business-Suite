@@ -17,15 +17,19 @@ class PagoClienteController extends Controller
             $query->where('cliente_id', $request->input('cliente_id'));
         }
 
+        if ($request->filled('estatus')) {
+            $query->where('estatus', $request->input('estatus'));
+        }
+
         if ($request->filled('desde')) {
-            $query->whereDate('fecha_pago', '>=', $request->input('desde'));
+            $query->whereDate('fecha_vencimiento', '>=', $request->input('desde'));
         }
 
         if ($request->filled('hasta')) {
-            $query->whereDate('fecha_pago', '<=', $request->input('hasta'));
+            $query->whereDate('fecha_vencimiento', '<=', $request->input('hasta'));
         }
 
-        $pagos = $query->latest('fecha_pago')->paginate(10)->withQueryString();
+        $pagos = $query->latest('fecha_vencimiento')->paginate(10)->withQueryString();
         $clientes = Cliente::activos()->with('user')->get();
 
         return view('pagos.index', compact('pagos', 'clientes'));
@@ -40,13 +44,7 @@ class PagoClienteController extends Controller
 
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'cliente_id' => ['required', 'exists:clientes,id'],
-            'monto' => ['required', 'numeric', 'min:0'],
-            'fecha_pago' => ['required', 'date'],
-            'metodo_pago' => ['nullable', 'string', 'max:50'],
-            'concepto' => ['nullable', 'string', 'max:255'],
-        ]);
+        $validated = $this->validated($request);
 
         PagoCliente::create($validated + ['registrado_por' => Auth::id()]);
 
@@ -63,13 +61,7 @@ class PagoClienteController extends Controller
 
     public function update(Request $request, PagoCliente $pago)
     {
-        $validated = $request->validate([
-            'cliente_id' => ['required', 'exists:clientes,id'],
-            'monto' => ['required', 'numeric', 'min:0'],
-            'fecha_pago' => ['required', 'date'],
-            'metodo_pago' => ['nullable', 'string', 'max:50'],
-            'concepto' => ['nullable', 'string', 'max:255'],
-        ]);
+        $validated = $this->validated($request);
 
         $pago->update($validated);
 
@@ -88,8 +80,32 @@ class PagoClienteController extends Controller
     public function misPagos()
     {
         $cliente = Cliente::where('user_id', Auth::id())->firstOrFail();
-        $pagos = PagoCliente::where('cliente_id', $cliente->id)->latest('fecha_pago')->paginate(10);
+        $pagos = PagoCliente::where('cliente_id', $cliente->id)->latest('fecha_vencimiento')->paginate(10);
 
         return view('pagos.mis-pagos', compact('pagos'));
+    }
+
+    private function validated(Request $request): array
+    {
+        $validated = $request->validate([
+            'cliente_id' => ['required', 'exists:clientes,id'],
+            'concepto_servicio' => ['required', 'string', 'max:200'],
+            'monto' => ['required', 'numeric', 'min:0'],
+            'periodo_facturado' => ['required', 'string', 'max:50'],
+            'forma_pago' => ['nullable', 'in:' . implode(',', PagoCliente::FORMA_PAGO)],
+            'estatus' => ['required', 'in:' . implode(',', PagoCliente::ESTATUS)],
+            'fecha_vencimiento' => ['required', 'date'],
+            'fecha_pago' => ['nullable', 'date'],
+        ]);
+
+        if ($validated['estatus'] === PagoCliente::ESTATUS_PAGADO && empty($validated['fecha_pago'])) {
+            $validated['fecha_pago'] = now()->format('Y-m-d');
+        }
+
+        if ($validated['estatus'] !== PagoCliente::ESTATUS_PAGADO) {
+            $validated['fecha_pago'] = null;
+        }
+
+        return $validated;
     }
 }

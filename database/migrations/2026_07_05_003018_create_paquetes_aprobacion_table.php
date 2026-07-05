@@ -14,14 +14,15 @@ return new class extends Migration
         Schema::create('paquetes_aprobacion', function (Blueprint $table) {
             $table->id();
             $table->foreignId('cliente_id')->constrained('clientes')->cascadeOnDelete();
-            $table->unsignedTinyInteger('mes');
-            $table->unsignedSmallInteger('anio');
-            $table->unsignedInteger('cantidad_requerida');
+            $table->string('mes_revision', 50);
+            $table->date('fecha_envio');
             $table->date('fecha_limite');
-            $table->enum('estado', ['pendiente', 'completado', 'auto_aprobado'])->default('pendiente');
+            $table->unsignedInteger('cantidad_requerida');
+            $table->enum('estatus', ['pendiente', 'completado', 'auto_aprobado'])->default('pendiente');
+            $table->text('observaciones')->nullable();
             $table->timestamps();
 
-            $table->unique(['cliente_id', 'mes', 'anio']);
+            $table->unique(['cliente_id', 'mes_revision']);
         });
     }
 

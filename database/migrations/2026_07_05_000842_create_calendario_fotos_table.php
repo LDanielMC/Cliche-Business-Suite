@@ -14,10 +14,10 @@ return new class extends Migration
         Schema::create('calendario_fotos', function (Blueprint $table) {
             $table->id();
             $table->foreignId('cliente_id')->constrained('clientes')->cascadeOnDelete();
-            $table->date('fecha_publicacion');
-            $table->string('descripcion')->nullable();
-            $table->enum('estado', ['programada', 'publicada', 'cancelada'])->default('programada');
-            $table->unsignedBigInteger('foto_aprobacion_id')->nullable();
+            $table->string('fotografia_asociada');
+            $table->dateTime('fecha_publicacion_programada');
+            $table->enum('estatus', ['programada', 'publicada', 'cancelada'])->default('programada');
+            $table->text('observaciones')->nullable();
             $table->foreignId('creado_por')->constrained('users')->cascadeOnDelete();
             $table->timestamps();
         });

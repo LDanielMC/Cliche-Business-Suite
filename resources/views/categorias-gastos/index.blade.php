@@ -37,7 +37,6 @@
                 <thead>
                     <tr>
                         <th>Nombre</th>
-                        <th>Descripción</th>
                         <th>Gastos Registrados</th>
                         <th>Acciones</th>
                     </tr>
@@ -45,8 +44,7 @@
                 <tbody>
                     @foreach($categorias as $categoria)
                         <tr>
-                            <td>{{ $categoria->nombre }}</td>
-                            <td>{{ $categoria->descripcion ?? 'N/A' }}</td>
+                            <td>{{ $categoria->nombre_categoria }}</td>
                             <td>{{ $categoria->gastos_count }}</td>
                             <td class="actions">
                                 <a href="{{ route('categorias-gastos.edit', $categoria) }}" class="btn-warning">Editar</a>

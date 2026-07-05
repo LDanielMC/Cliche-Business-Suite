@@ -13,12 +13,14 @@ return new class extends Migration
     {
         Schema::create('gastos_operativos', function (Blueprint $table) {
             $table->id();
+            $table->string('concepto_gasto', 200);
             $table->foreignId('categoria_gasto_id')->constrained('categorias_gastos')->restrictOnDelete();
-            $table->foreignId('cliente_id')->nullable()->constrained('clientes')->nullOnDelete();
-            $table->string('concepto', 150);
             $table->decimal('monto', 10, 2);
             $table->date('fecha_gasto');
-            $table->string('notas')->nullable();
+            $table->foreignId('cliente_id')->nullable()->constrained('clientes')->nullOnDelete();
+            $table->string('comprobante')->nullable();
+            $table->enum('forma_pago', ['efectivo', 'transferencia', 'tarjeta', 'otro']);
+            $table->text('observaciones')->nullable();
             $table->foreignId('registrado_por')->constrained('users')->cascadeOnDelete();
             $table->timestamps();
         });

@@ -12,6 +12,10 @@
     th, td { padding: 12px; text-align: left; border-bottom: 1px solid #e0e0e0; }
     th { background: #f8f9fa; color: #666; font-size: 13px; text-transform: uppercase; }
     tr:hover { background: #f8f9fa; }
+    .badge { padding: 5px 10px; border-radius: 5px; font-size: 12px; font-weight: 500; text-transform: capitalize; }
+    .badge-pagado { background: #d4edda; color: #155724; }
+    .badge-pendiente { background: #fff3cd; color: #856404; }
+    .badge-vencido { background: #f8d7da; color: #721c24; }
     .empty-state { text-align: center; padding: 50px; color: #666; }
     .pagination { margin-top: 20px; }
 </style>
@@ -28,19 +32,23 @@
             <table>
                 <thead>
                     <tr>
-                        <th>Fecha</th>
-                        <th>Monto</th>
-                        <th>Método</th>
                         <th>Concepto</th>
+                        <th>Monto</th>
+                        <th>Periodo</th>
+                        <th>Vencimiento</th>
+                        <th>Fecha de Pago</th>
+                        <th>Estatus</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach($pagos as $pago)
                         <tr>
-                            <td>{{ $pago->fecha_pago->format('d/m/Y') }}</td>
+                            <td>{{ $pago->concepto_servicio }}</td>
                             <td>${{ number_format($pago->monto, 2) }}</td>
-                            <td>{{ $pago->metodo_pago ?? 'N/A' }}</td>
-                            <td>{{ $pago->concepto ?? 'N/A' }}</td>
+                            <td>{{ $pago->periodo_facturado }}</td>
+                            <td>{{ $pago->fecha_vencimiento->format('d/m/Y') }}</td>
+                            <td>{{ $pago->fecha_pago?->format('d/m/Y') ?? 'N/A' }}</td>
+                            <td><span class="badge badge-{{ $pago->estatus }}">{{ $pago->estatus }}</span></td>
                         </tr>
                     @endforeach
                 </tbody>

@@ -41,7 +41,7 @@
             <select id="categoria_gasto_id" name="categoria_gasto_id">
                 <option value="">Todas</option>
                 @foreach($categorias as $categoria)
-                    <option value="{{ $categoria->id }}" @selected($categoriaId == $categoria->id)>{{ $categoria->nombre }}</option>
+                    <option value="{{ $categoria->id }}" @selected($categoriaId == $categoria->id)>{{ $categoria->nombre_categoria }}</option>
                 @endforeach
             </select>
         </div>

@@ -38,27 +38,31 @@
             <table>
                 <thead>
                     <tr>
-                        <th>Servicio</th>
+                        <th>Cliente</th>
+                        <th>Plataforma</th>
                         <th>URL</th>
                         <th>Usuario</th>
+                        <th>Correo Asociado</th>
                         <th>Contraseña</th>
-                        <th>Notas</th>
+                        <th>Observaciones</th>
                         <th>Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach($credenciales as $credencial)
                         <tr>
-                            <td>{{ $credencial->nombre_servicio }}</td>
-                            <td>{{ $credencial->url ?? 'N/A' }}</td>
+                            <td>{{ $credencial->cliente->nombre_negocio }}</td>
+                            <td>{{ $credencial->nombre_plataforma }}</td>
+                            <td>{{ $credencial->url_acceso ?? 'N/A' }}</td>
                             <td>{{ $credencial->usuario }}</td>
+                            <td>{{ $credencial->correo_asociado ?? 'N/A' }}</td>
                             <td>
                                 <div class="password-cell" x-data="{ visible: false }">
                                     <span x-text="visible ? @js($credencial->password) : '••••••••'"></span>
                                     <button type="button" class="btn-secondary-sm" @click="visible = !visible" x-text="visible ? 'Ocultar' : 'Mostrar'"></button>
                                 </div>
                             </td>
-                            <td>{{ $credencial->notas ?? 'N/A' }}</td>
+                            <td>{{ $credencial->observaciones ?? 'N/A' }}</td>
                             <td class="actions">
                                 <a href="{{ route('boveda.edit', $credencial) }}" class="btn-warning">Editar</a>
                                 <form action="{{ route('boveda.destroy', $credencial) }}" method="POST" onsubmit="return confirm('¿Eliminar esta credencial?');">

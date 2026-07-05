@@ -16,10 +16,9 @@ return new class extends Migration
             $table->foreignId('cliente_id')->constrained('clientes')->cascadeOnDelete();
             $table->date('fecha_inicio');
             $table->date('fecha_vencimiento');
-            $table->unsignedTinyInteger('duracion_meses')->default(1);
-            $table->enum('estado', ['vigente', 'por_vencer', 'vencido', 'renovado'])->default('vigente');
-            $table->date('fecha_renovacion')->nullable();
-            $table->timestamp('notificado_at')->nullable();
+            $table->enum('estatus', ['vigente', 'por_vencer', 'vencido'])->default('vigente');
+            $table->date('fecha_recordatorio')->nullable();
+            $table->text('observaciones')->nullable();
             $table->timestamps();
         });
     }

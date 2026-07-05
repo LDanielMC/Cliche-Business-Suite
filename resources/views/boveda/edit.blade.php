@@ -30,7 +30,7 @@
         <h1>Editar Credencial</h1>
 
         <form method="POST" action="{{ route('boveda.update', $credencial) }}">
-            @include('boveda._form', ['edit' => true, 'credencial' => $credencial])
+            @include('boveda._form', ['edit' => true, 'credencial' => $credencial, 'clientes' => $clientes])
         </form>
     </div>
 </div>

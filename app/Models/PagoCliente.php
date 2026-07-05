@@ -7,14 +7,24 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class PagoCliente extends Model
 {
+    const ESTATUS_PAGADO = 'pagado';
+    const ESTATUS_PENDIENTE = 'pendiente';
+    const ESTATUS_VENCIDO = 'vencido';
+
+    const ESTATUS = [self::ESTATUS_PAGADO, self::ESTATUS_PENDIENTE, self::ESTATUS_VENCIDO];
+    const FORMA_PAGO = ['efectivo', 'transferencia', 'tarjeta', 'otro'];
+
     protected $table = 'pagos_clientes';
 
     protected $fillable = [
         'cliente_id',
+        'concepto_servicio',
         'monto',
         'fecha_pago',
-        'metodo_pago',
-        'concepto',
+        'periodo_facturado',
+        'forma_pago',
+        'estatus',
+        'fecha_vencimiento',
         'registrado_por',
     ];
 
@@ -22,6 +32,7 @@ class PagoCliente extends Model
     {
         return [
             'fecha_pago' => 'date',
+            'fecha_vencimiento' => 'date',
             'monto' => 'decimal:2',
         ];
     }
@@ -34,5 +45,10 @@ class PagoCliente extends Model
     public function registradoPor(): BelongsTo
     {
         return $this->belongsTo(User::class, 'registrado_por');
+    }
+
+    public function scopePagados($query)
+    {
+        return $query->where('estatus', self::ESTATUS_PAGADO);
     }
 }

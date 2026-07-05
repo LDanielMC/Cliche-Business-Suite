@@ -31,17 +31,34 @@ class PaqueteAprobacionController extends Controller
     {
         $validated = $request->validate([
             'cliente_id' => ['required', 'exists:clientes,id'],
-            'mes' => ['required', 'integer', 'between:1,12'],
-            'anio' => ['required', 'integer', 'min:2020'],
+            'mes_revision' => ['required', 'date_format:Y-m'],
             'fecha_limite' => ['required', 'date'],
+            'observaciones' => ['nullable', 'string'],
         ]);
 
         $cliente = Cliente::findOrFail($validated['cliente_id']);
 
         $paquete = PaqueteAprobacion::create($validated + [
+            'fecha_envio' => now()->format('Y-m-d'),
             'cantidad_requerida' => $cliente->cantidad_fotos,
-            'estado' => PaqueteAprobacion::ESTADO_PENDIENTE,
+            'estatus' => PaqueteAprobacion::ESTATUS_PENDIENTE,
         ]);
+
+        // Las fotos que el cliente decidió conservar en un ciclo anterior
+        // pasan a ser candidatas de este nuevo paquete.
+        $paqueteAnterior = PaqueteAprobacion::where('cliente_id', $cliente->id)
+            ->where('id', '!=', $paquete->id)
+            ->latest('fecha_limite')
+            ->first();
+
+        if ($paqueteAnterior) {
+            FotoAprobacion::where('paquete_aprobacion_id', $paqueteAnterior->id)
+                ->where('estatus', FotoAprobacion::ESTATUS_CONSERVADA)
+                ->update([
+                    'paquete_aprobacion_id' => $paquete->id,
+                    'estatus' => FotoAprobacion::ESTATUS_PENDIENTE,
+                ]);
+        }
 
         return redirect()->route('aprobaciones.show', $paquete)
             ->with('success', 'Paquete de aprobación creado. Ahora sube las fotografías candidatas.');
@@ -61,17 +78,13 @@ class PaqueteAprobacionController extends Controller
             'fotos.*' => ['image', 'max:5120'],
         ]);
 
-        $orden = $paquete->fotos()->max('orden') ?? 0;
-
         foreach ($validated['fotos'] as $archivo) {
-            $orden++;
             $ruta = $archivo->store("fotos-aprobacion/{$paquete->cliente_id}/{$paquete->id}", 'public');
 
             FotoAprobacion::create([
                 'paquete_aprobacion_id' => $paquete->id,
-                'ruta_imagen' => $ruta,
-                'estado' => FotoAprobacion::ESTADO_PENDIENTE,
-                'orden' => $orden,
+                'ruta_foto' => $ruta,
+                'estatus' => FotoAprobacion::ESTATUS_PENDIENTE,
             ]);
         }
 
@@ -81,12 +94,12 @@ class PaqueteAprobacionController extends Controller
 
     public function destroyFoto(PaqueteAprobacion $paquete, FotoAprobacion $foto)
     {
-        if ($foto->estado === FotoAprobacion::ESTADO_APROBADA) {
+        if ($foto->estatus === FotoAprobacion::ESTATUS_APROBADA) {
             return redirect()->route('aprobaciones.show', $paquete)
                 ->with('error', 'No se puede eliminar una fotografía ya aprobada.');
         }
 
-        Storage::disk('public')->delete($foto->ruta_imagen);
+        Storage::disk('public')->delete($foto->ruta_foto);
         $foto->delete();
 
         return redirect()->route('aprobaciones.show', $paquete)
@@ -96,7 +109,7 @@ class PaqueteAprobacionController extends Controller
     public function destroy(PaqueteAprobacion $paquete)
     {
         foreach ($paquete->fotos as $foto) {
-            Storage::disk('public')->delete($foto->ruta_imagen);
+            Storage::disk('public')->delete($foto->ruta_foto);
         }
 
         $paquete->delete();
@@ -132,28 +145,42 @@ class PaqueteAprobacionController extends Controller
         $cliente = Cliente::where('user_id', Auth::id())->firstOrFail();
         abort_unless($paquete->cliente_id === $cliente->id, 403);
 
-        if ($paquete->estado !== PaqueteAprobacion::ESTADO_PENDIENTE) {
+        if ($paquete->estatus !== PaqueteAprobacion::ESTATUS_PENDIENTE) {
             return redirect()->route('cliente.aprobaciones.index')
                 ->with('error', 'Este paquete ya fue procesado.');
         }
 
+        $idsValidos = $paquete->fotos()->pluck('id')->all();
+
         $validated = $request->validate([
-            'fotos_ids' => ['required', 'array', 'max:' . $paquete->cantidad_requerida],
-            'fotos_ids.*' => ['exists:fotos_aprobacion,id'],
+            'aprobadas' => ['nullable', 'array', 'max:' . $paquete->cantidad_requerida],
+            'aprobadas.*' => ['exists:fotos_aprobacion,id'],
+            'conservar' => ['nullable', 'array'],
+            'conservar.*' => ['exists:fotos_aprobacion,id'],
         ]);
 
-        $idsValidos = $paquete->fotos()->pluck('id')->all();
-        $seleccionadas = array_intersect($validated['fotos_ids'], $idsValidos);
+        $aprobadas = array_intersect($validated['aprobadas'] ?? [], $idsValidos);
+        $conservar = array_intersect($validated['conservar'] ?? [], $idsValidos);
+        $conservar = array_diff($conservar, $aprobadas);
+
+        if (empty($aprobadas)) {
+            return redirect()->route('cliente.aprobaciones.show', $paquete)
+                ->with('error', 'Selecciona al menos una fotografía para este ciclo.');
+        }
 
         FotoAprobacion::where('paquete_aprobacion_id', $paquete->id)
-            ->whereIn('id', $seleccionadas)
-            ->update(['estado' => FotoAprobacion::ESTADO_APROBADA]);
+            ->whereIn('id', $aprobadas)
+            ->update(['estatus' => FotoAprobacion::ESTATUS_APROBADA]);
 
         FotoAprobacion::where('paquete_aprobacion_id', $paquete->id)
-            ->whereNotIn('id', $seleccionadas)
-            ->update(['estado' => FotoAprobacion::ESTADO_DESCARTADA]);
+            ->whereIn('id', $conservar)
+            ->update(['estatus' => FotoAprobacion::ESTATUS_CONSERVADA]);
 
-        $paquete->update(['estado' => PaqueteAprobacion::ESTADO_COMPLETADO]);
+        FotoAprobacion::where('paquete_aprobacion_id', $paquete->id)
+            ->whereNotIn('id', array_merge($aprobadas, $conservar))
+            ->update(['estatus' => FotoAprobacion::ESTATUS_DESCARTADA]);
+
+        $paquete->update(['estatus' => PaqueteAprobacion::ESTATUS_COMPLETADO]);
 
         $paquete->publicarEnCalendario(Auth::id());
 

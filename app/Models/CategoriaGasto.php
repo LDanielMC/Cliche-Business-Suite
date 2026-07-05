@@ -10,8 +10,7 @@ class CategoriaGasto extends Model
     protected $table = 'categorias_gastos';
 
     protected $fillable = [
-        'nombre',
-        'descripcion',
+        'nombre_categoria',
     ];
 
     public function gastos(): HasMany

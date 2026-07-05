@@ -4,32 +4,33 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Storage;
 
 class CalendarioFoto extends Model
 {
-    const ESTADO_PROGRAMADA = 'programada';
-    const ESTADO_PUBLICADA = 'publicada';
-    const ESTADO_CANCELADA = 'cancelada';
+    const ESTATUS_PROGRAMADA = 'programada';
+    const ESTATUS_PUBLICADA = 'publicada';
+    const ESTATUS_CANCELADA = 'cancelada';
 
-    const ESTADOS = [
-        self::ESTADO_PROGRAMADA,
-        self::ESTADO_PUBLICADA,
-        self::ESTADO_CANCELADA,
+    const ESTATUS = [
+        self::ESTATUS_PROGRAMADA,
+        self::ESTATUS_PUBLICADA,
+        self::ESTATUS_CANCELADA,
     ];
 
     protected $fillable = [
         'cliente_id',
-        'fecha_publicacion',
-        'descripcion',
-        'estado',
-        'foto_aprobacion_id',
+        'fotografia_asociada',
+        'fecha_publicacion_programada',
+        'estatus',
+        'observaciones',
         'creado_por',
     ];
 
     protected function casts(): array
     {
         return [
-            'fecha_publicacion' => 'date',
+            'fecha_publicacion_programada' => 'datetime',
         ];
     }
 
@@ -43,8 +44,8 @@ class CalendarioFoto extends Model
         return $this->belongsTo(User::class, 'creado_por');
     }
 
-    public function fotoAprobacion(): BelongsTo
+    public function getFotografiaUrlAttribute(): string
     {
-        return $this->belongsTo(FotoAprobacion::class, 'foto_aprobacion_id');
+        return Storage::disk('public')->url($this->fotografia_asociada);
     }
 }

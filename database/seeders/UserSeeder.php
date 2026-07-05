@@ -12,6 +12,7 @@ class UserSeeder extends Seeder
     {
         // Usuario Administrador
         User::create([
+            'name' => 'Administrador Sistema',
             'email' => 'admin@sistema.com',
             'password' => Hash::make('password123'),
             'role' => User::ROLE_ADMIN,
@@ -22,6 +23,7 @@ class UserSeeder extends Seeder
 
         // Usuario Operador
         User::create([
+            'name' => 'Operador Ejemplo',
             'email' => 'operador@sistema.com',
             'password' => Hash::make('password123'),
             'role' => User::ROLE_OPERADOR,
@@ -32,6 +34,7 @@ class UserSeeder extends Seeder
 
         // Usuario Cliente
         User::create([
+            'name' => 'Cliente Demo',
             'email' => 'cliente@sistema.com',
             'password' => Hash::make('password123'),
             'role' => User::ROLE_CLIENTE,

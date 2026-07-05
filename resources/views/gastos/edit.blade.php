@@ -29,7 +29,7 @@
     <div class="form-card">
         <h1>Editar Gasto Operativo</h1>
 
-        <form method="POST" action="{{ route('gastos.update', $gasto) }}">
+        <form method="POST" action="{{ route('gastos.update', $gasto) }}" enctype="multipart/form-data">
             @include('gastos._form', ['edit' => true, 'gasto' => $gasto, 'categorias' => $categorias, 'clientes' => $clientes])
         </form>
     </div>

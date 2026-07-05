@@ -29,7 +29,7 @@
     <div class="form-card">
         <h1>Nuevo Gasto Operativo</h1>
 
-        <form method="POST" action="{{ route('gastos.store') }}">
+        <form method="POST" action="{{ route('gastos.store') }}" enctype="multipart/form-data">
             @include('gastos._form', ['edit' => false, 'gasto' => null, 'categorias' => $categorias, 'clientes' => $clientes])
         </form>
     </div>

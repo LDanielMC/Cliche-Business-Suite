@@ -29,7 +29,7 @@
     <div class="form-card">
         <h1>Nueva Publicación</h1>
 
-        <form method="POST" action="{{ route('calendario.store') }}">
+        <form method="POST" action="{{ route('calendario.store') }}" enctype="multipart/form-data">
             @include('calendario._form', ['edit' => false, 'publicacion' => null, 'clientes' => $clientes])
         </form>
     </div>

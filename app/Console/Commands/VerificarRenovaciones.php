@@ -21,34 +21,33 @@ class VerificarRenovaciones extends Command
     {
         $hoy = now()->startOfDay();
 
-        $porVencer = ControlRenovacion::with('cliente.user')
-            ->whereIn('estado', [ControlRenovacion::ESTADO_VIGENTE, ControlRenovacion::ESTADO_POR_VENCER])
-            ->whereDate('fecha_vencimiento', '<=', $hoy->copy()->addDays(7))
-            ->whereDate('fecha_vencimiento', '>=', $hoy)
+        $conRecordatorioHoy = ControlRenovacion::with('cliente.user')
+            ->whereIn('estatus', [ControlRenovacion::ESTATUS_VIGENTE, ControlRenovacion::ESTATUS_POR_VENCER])
+            ->whereDate('fecha_recordatorio', $hoy)
             ->get();
 
-        foreach ($porVencer as $renovacion) {
-            $renovacion->update(['estado' => ControlRenovacion::ESTADO_POR_VENCER]);
-
-            if (is_null($renovacion->notificado_at)) {
-                Mail::to($renovacion->cliente->user->email)->send(new RecordatorioRenovacion($renovacion));
-                $renovacion->update(['notificado_at' => now()]);
-                $this->info("Recordatorio enviado a {$renovacion->cliente->nombre_negocio}.");
-            }
+        foreach ($conRecordatorioHoy as $renovacion) {
+            Mail::to($renovacion->cliente->user->email)->send(new RecordatorioRenovacion($renovacion));
+            $this->info("Recordatorio enviado a {$renovacion->cliente->nombre_negocio}.");
         }
 
+        $porVencer = ControlRenovacion::where('estatus', ControlRenovacion::ESTATUS_VIGENTE)
+            ->whereDate('fecha_vencimiento', '<=', $hoy->copy()->addDays(7))
+            ->whereDate('fecha_vencimiento', '>=', $hoy)
+            ->update(['estatus' => ControlRenovacion::ESTATUS_POR_VENCER]);
+
         $vencidas = ControlRenovacion::with('cliente.user')
-            ->whereIn('estado', [ControlRenovacion::ESTADO_VIGENTE, ControlRenovacion::ESTADO_POR_VENCER])
+            ->whereIn('estatus', [ControlRenovacion::ESTATUS_VIGENTE, ControlRenovacion::ESTATUS_POR_VENCER])
             ->whereDate('fecha_vencimiento', '<', $hoy)
             ->get();
 
         foreach ($vencidas as $renovacion) {
-            $renovacion->update(['estado' => ControlRenovacion::ESTADO_VENCIDO]);
+            $renovacion->update(['estatus' => ControlRenovacion::ESTATUS_VENCIDO]);
             $renovacion->cliente->user->update(['estatus' => User::ESTATUS_SUSPENDIDO]);
             $this->info("Cliente {$renovacion->cliente->nombre_negocio} suspendido por falta de renovación.");
         }
 
-        if ($porVencer->isEmpty() && $vencidas->isEmpty()) {
+        if ($conRecordatorioHoy->isEmpty() && $porVencer === 0 && $vencidas->isEmpty()) {
             $this->info('No hay renovaciones que requieran atención hoy.');
         }
 

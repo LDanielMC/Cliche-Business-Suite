@@ -11,7 +11,7 @@
             <option value="">Selecciona una categoría</option>
             @foreach($categorias as $categoria)
                 <option value="{{ $categoria->id }}" @selected(old('categoria_gasto_id', $gasto->categoria_gasto_id ?? '') == $categoria->id)>
-                    {{ $categoria->nombre }}
+                    {{ $categoria->nombre_categoria }}
                 </option>
             @endforeach
         </select>
@@ -37,9 +37,9 @@
 </div>
 
 <div class="form-group">
-    <label for="concepto">Concepto *</label>
-    <input type="text" id="concepto" name="concepto" class="form-control @error('concepto') error @enderror" value="{{ old('concepto', $gasto->concepto ?? '') }}" maxlength="150" required>
-    @error('concepto')
+    <label for="concepto_gasto">Concepto *</label>
+    <input type="text" id="concepto_gasto" name="concepto_gasto" class="form-control @error('concepto_gasto') error @enderror" value="{{ old('concepto_gasto', $gasto->concepto_gasto ?? '') }}" maxlength="200" required>
+    @error('concepto_gasto')
         <span class="error-message">{{ $message }}</span>
     @enderror
 </div>
@@ -62,10 +62,36 @@
     </div>
 </div>
 
+<div class="form-row">
+    <div class="form-group col-2">
+        <label for="forma_pago">Forma de Pago *</label>
+        <select id="forma_pago" name="forma_pago" class="form-control @error('forma_pago') error @enderror" required>
+            <option value="">Selecciona una opción</option>
+            @foreach(\App\Models\GastoOperativo::FORMA_PAGO as $forma)
+                <option value="{{ $forma }}" @selected(old('forma_pago', $gasto->forma_pago ?? '') == $forma)>{{ ucfirst($forma) }}</option>
+            @endforeach
+        </select>
+        @error('forma_pago')
+            <span class="error-message">{{ $message }}</span>
+        @enderror
+    </div>
+
+    <div class="form-group col-2">
+        <label for="comprobante">Comprobante (imagen o PDF)</label>
+        <input type="file" id="comprobante" name="comprobante" class="form-control @error('comprobante') error @enderror" accept=".jpg,.jpeg,.png,.pdf">
+        @if(isset($gasto) && $gasto->comprobante)
+            <p style="font-size:13px; margin-top:6px;"><a href="{{ $gasto->comprobante_url }}" target="_blank">Ver comprobante actual</a></p>
+        @endif
+        @error('comprobante')
+            <span class="error-message">{{ $message }}</span>
+        @enderror
+    </div>
+</div>
+
 <div class="form-group">
-    <label for="notas">Notas</label>
-    <input type="text" id="notas" name="notas" class="form-control @error('notas') error @enderror" value="{{ old('notas', $gasto->notas ?? '') }}" maxlength="255">
-    @error('notas')
+    <label for="observaciones">Observaciones</label>
+    <textarea id="observaciones" name="observaciones" class="form-control @error('observaciones') error @enderror" rows="3">{{ old('observaciones', $gasto->observaciones ?? '') }}</textarea>
+    @error('observaciones')
         <span class="error-message">{{ $message }}</span>
     @enderror
 </div>
