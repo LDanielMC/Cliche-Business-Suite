@@ -102,8 +102,8 @@
 <div class="cliente-section">
     <h2>Mis Servicios</h2>
     <div class="cliente-grid">
-        <button class="cliente-btn">Mis Pedidos</button>
-        <button class="cliente-btn">Facturas</button>
+        <a href="{{ route('cliente.aprobaciones.index') }}" class="cliente-link">Aprobación de Fotos</a>
+        <a href="{{ route('pagos.misPagos') }}" class="cliente-link">Mis Pagos</a>
         <button class="cliente-btn">Soporte</button>
         <a href="{{ route('clientes.perfil') }}" class="cliente-link">Mi Perfil</a>
     </div>

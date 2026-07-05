@@ -123,8 +123,8 @@
 <div class="operador-section">
     <h2>Gestion de Operaciones</h2>
     <div class="operador-grid">
-        <button class="operador-btn">Ver Tareas</button>
-        <button class="operador-btn">Asignar Servicios</button>
+        <a href="{{ route('calendario.index') }}" class="operador-btn" style="text-decoration:none; display:block;">Calendario de Fotos</a>
+        <a href="{{ route('aprobaciones.index') }}" class="operador-btn" style="text-decoration:none; display:block;">Aprobación de Fotos</a>
         <button class="operador-btn">Desempeño</button>
         <button class="operador-btn">Horarios</button>
     </div>

@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Cliente extends Model
 {
@@ -32,6 +33,11 @@ class Cliente extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function renovaciones(): HasMany
+    {
+        return $this->hasMany(ControlRenovacion::class);
     }
 
     public function scopeActivos($query)
