@@ -16,6 +16,9 @@ export default defineConfig({
         }),
         tailwindcss(),
     ],
+    optimizeDeps: {
+        include: ['chart.js'],
+    },
     server: {
         watch: {
             ignored: ['**/storage/framework/views/**'],
