@@ -18,7 +18,8 @@
     .badge-vigente { background: #d4edda; color: #155724; }
     .badge-por_vencer { background: #fff3cd; color: #856404; }
     .badge-vencido { background: #f8d7da; color: #721c24; }
-    .badge-renovado { background: #cce5ff; color: #004085; }
+    .renovar-form { display: flex; gap: 6px; align-items: center; }
+    .renovar-form input { width: 55px; padding: 6px; border: 2px solid #e0e0e0; border-radius: 6px; }
     .empty-state { text-align: center; padding: 50px; color: #666; }
     .pagination { margin-top: 20px; }
 </style>
@@ -39,10 +40,9 @@
                         <th>Cliente</th>
                         <th>Inicio</th>
                         <th>Vencimiento</th>
-                        <th>Duración</th>
-                        <th>Estado</th>
-                        <th>Última Renovación</th>
-                        <th>Acciones</th>
+                        <th>Recordatorio</th>
+                        <th>Estatus</th>
+                        <th>Renovar</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -51,12 +51,12 @@
                             <td>{{ $renovacion->cliente->nombre_negocio }}</td>
                             <td>{{ $renovacion->fecha_inicio->format('d/m/Y') }}</td>
                             <td>{{ $renovacion->fecha_vencimiento->format('d/m/Y') }}</td>
-                            <td>{{ $renovacion->duracion_meses }} mes(es)</td>
-                            <td><span class="badge badge-{{ $renovacion->estado }}">{{ str_replace('_', ' ', $renovacion->estado) }}</span></td>
-                            <td>{{ $renovacion->fecha_renovacion?->format('d/m/Y') ?? 'N/A' }}</td>
+                            <td>{{ $renovacion->fecha_recordatorio?->format('d/m/Y') ?? 'N/A' }}</td>
+                            <td><span class="badge badge-{{ $renovacion->estatus }}">{{ str_replace('_', ' ', $renovacion->estatus) }}</span></td>
                             <td>
-                                <form action="{{ route('renovaciones.renovar', $renovacion) }}" method="POST" onsubmit="return confirm('¿Registrar la renovación de este cliente?');">
+                                <form action="{{ route('renovaciones.renovar', $renovacion) }}" method="POST" class="renovar-form" onsubmit="return confirm('¿Registrar la renovación de este cliente?');">
                                     @csrf
+                                    <input type="number" name="meses" min="1" max="12" value="1" title="Meses a renovar">
                                     <button type="submit" class="btn-primary" style="padding:6px 14px; font-size:13px;">Renovar</button>
                                 </form>
                             </td>

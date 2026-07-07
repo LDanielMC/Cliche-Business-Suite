@@ -14,10 +14,13 @@ return new class extends Migration
         Schema::create('pagos_clientes', function (Blueprint $table) {
             $table->id();
             $table->foreignId('cliente_id')->constrained('clientes')->cascadeOnDelete();
+            $table->string('concepto_servicio', 200);
             $table->decimal('monto', 10, 2);
-            $table->date('fecha_pago');
-            $table->string('metodo_pago', 50)->nullable();
-            $table->string('concepto')->nullable();
+            $table->date('fecha_pago')->nullable();
+            $table->string('periodo_facturado', 50);
+            $table->enum('forma_pago', ['efectivo', 'transferencia', 'tarjeta', 'otro'])->nullable();
+            $table->enum('estatus', ['pagado', 'pendiente', 'vencido'])->default('pendiente');
+            $table->date('fecha_vencimiento');
             $table->foreignId('registrado_por')->constrained('users')->cascadeOnDelete();
             $table->timestamps();
         });

@@ -18,7 +18,7 @@
     .foto-card-footer { padding: 8px; display: flex; justify-content: space-between; align-items: center; }
     .badge { padding: 4px 8px; border-radius: 5px; font-size: 11px; font-weight: 500; text-transform: capitalize; }
     .badge-pendiente { background: #cce5ff; color: #004085; }
-    .badge-seleccionada { background: #fff3cd; color: #856404; }
+    .badge-conservada { background: #fff3cd; color: #856404; }
     .badge-aprobada { background: #d4edda; color: #155724; }
     .badge-descartada { background: #f8d7da; color: #721c24; }
     .empty-state { text-align: center; padding: 30px; color: #666; }
@@ -29,7 +29,7 @@
 <div class="aprobacion-container">
     <div class="page-header">
         <h1>Paquete de Aprobación — {{ $paquete->cliente->nombre_negocio }}</h1>
-        <div class="subtitle">Periodo {{ $paquete->mes }}/{{ $paquete->anio }} · Cuota: {{ $paquete->cantidad_requerida }} fotos · Fecha límite: {{ $paquete->fecha_limite->format('d/m/Y') }} · Estado: {{ str_replace('_', ' ', $paquete->estado) }}</div>
+        <div class="subtitle">Periodo {{ ucfirst($paquete->mes_revision_legible) }} · Cuota: {{ $paquete->cantidad_requerida }} fotos · Fecha límite: {{ $paquete->fecha_limite->format('d/m/Y') }} · Estado: {{ str_replace('_', ' ', $paquete->estatus) }}</div>
     </div>
 
     <div class="card-box">
@@ -54,8 +54,8 @@
                     <div class="foto-card">
                         <img src="{{ $foto->url }}" alt="Foto candidata">
                         <div class="foto-card-footer">
-                            <span class="badge badge-{{ $foto->estado }}">{{ $foto->estado }}</span>
-                            @if($foto->estado !== 'aprobada')
+                            <span class="badge badge-{{ $foto->estatus }}">{{ $foto->estatus }}</span>
+                            @if($foto->estatus !== 'aprobada')
                                 <form action="{{ route('aprobaciones.fotos.destroy', [$paquete, $foto]) }}" method="POST" onsubmit="return confirm('¿Eliminar esta fotografía?');">
                                     @csrf
                                     @method('DELETE')

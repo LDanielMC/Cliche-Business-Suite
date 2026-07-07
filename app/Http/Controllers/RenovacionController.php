@@ -21,7 +21,7 @@ class RenovacionController extends Controller
     public function create()
     {
         $clientes = Cliente::activos()->with('user')
-            ->whereDoesntHave('renovaciones', fn ($q) => $q->whereIn('estado', [ControlRenovacion::ESTADO_VIGENTE, ControlRenovacion::ESTADO_POR_VENCER]))
+            ->whereDoesntHave('renovaciones', fn ($q) => $q->whereIn('estatus', [ControlRenovacion::ESTATUS_VIGENTE, ControlRenovacion::ESTATUS_POR_VENCER]))
             ->get();
 
         return view('renovaciones.create', compact('clientes'));
@@ -32,31 +32,39 @@ class RenovacionController extends Controller
         $validated = $request->validate([
             'cliente_id' => ['required', 'exists:clientes,id'],
             'fecha_inicio' => ['required', 'date'],
-            'duracion_meses' => ['required', 'integer', 'min:1', 'max:12'],
+            'meses' => ['required', 'integer', 'min:1', 'max:12'],
+            'observaciones' => ['nullable', 'string'],
         ]);
 
         $fechaInicio = \Carbon\Carbon::parse($validated['fecha_inicio']);
-        $duracionMeses = (int) $validated['duracion_meses'];
+        $fechaVencimiento = $fechaInicio->copy()->addMonths((int) $validated['meses']);
 
         ControlRenovacion::create([
             'cliente_id' => $validated['cliente_id'],
             'fecha_inicio' => $fechaInicio,
-            'fecha_vencimiento' => $fechaInicio->copy()->addMonths($duracionMeses),
-            'duracion_meses' => $duracionMeses,
-            'estado' => ControlRenovacion::ESTADO_VIGENTE,
+            'fecha_vencimiento' => $fechaVencimiento,
+            'estatus' => ControlRenovacion::ESTATUS_VIGENTE,
+            'fecha_recordatorio' => $fechaVencimiento->copy()->subDays(7),
+            'observaciones' => $validated['observaciones'] ?? null,
         ]);
 
         return redirect()->route('renovaciones.index')
             ->with('success', 'Ciclo de renovación registrado correctamente.');
     }
 
-    public function renovar(ControlRenovacion $renovacion)
+    public function renovar(Request $request, ControlRenovacion $renovacion)
     {
+        $validated = $request->validate([
+            'meses' => ['required', 'integer', 'min:1', 'max:12'],
+        ]);
+
+        $fechaVencimiento = $renovacion->fecha_vencimiento->copy()->addMonths((int) $validated['meses']);
+
         $renovacion->update([
-            'fecha_renovacion' => now(),
-            'fecha_vencimiento' => $renovacion->fecha_vencimiento->copy()->addMonths($renovacion->duracion_meses),
-            'estado' => ControlRenovacion::ESTADO_RENOVADO,
-            'notificado_at' => null,
+            'fecha_inicio' => now()->format('Y-m-d'),
+            'fecha_vencimiento' => $fechaVencimiento,
+            'estatus' => ControlRenovacion::ESTATUS_VIGENTE,
+            'fecha_recordatorio' => $fechaVencimiento->copy()->subDays(7),
         ]);
 
         $cliente = $renovacion->cliente;

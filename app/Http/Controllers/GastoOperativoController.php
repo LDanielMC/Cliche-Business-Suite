@@ -7,6 +7,7 @@ use App\Models\Cliente;
 use App\Models\GastoOperativo;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class GastoOperativoController extends Controller
 {
@@ -27,14 +28,14 @@ class GastoOperativoController extends Controller
         }
 
         $gastos = $query->latest('fecha_gasto')->paginate(10)->withQueryString();
-        $categorias = CategoriaGasto::orderBy('nombre')->get();
+        $categorias = CategoriaGasto::orderBy('nombre_categoria')->get();
 
         return view('gastos.index', compact('gastos', 'categorias'));
     }
 
     public function create()
     {
-        $categorias = CategoriaGasto::orderBy('nombre')->get();
+        $categorias = CategoriaGasto::orderBy('nombre_categoria')->get();
         $clientes = Cliente::activos()->with('user')->get();
 
         return view('gastos.create', compact('categorias', 'clientes'));
@@ -45,11 +46,17 @@ class GastoOperativoController extends Controller
         $validated = $request->validate([
             'categoria_gasto_id' => ['required', 'exists:categorias_gastos,id'],
             'cliente_id' => ['nullable', 'exists:clientes,id'],
-            'concepto' => ['required', 'string', 'max:150'],
+            'concepto_gasto' => ['required', 'string', 'max:200'],
             'monto' => ['required', 'numeric', 'min:0'],
             'fecha_gasto' => ['required', 'date'],
-            'notas' => ['nullable', 'string', 'max:255'],
+            'forma_pago' => ['required', 'in:' . implode(',', GastoOperativo::FORMA_PAGO)],
+            'comprobante' => ['nullable', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:5120'],
+            'observaciones' => ['nullable', 'string'],
         ]);
+
+        if ($request->hasFile('comprobante')) {
+            $validated['comprobante'] = $request->file('comprobante')->store('comprobantes-gastos', 'public');
+        }
 
         GastoOperativo::create($validated + ['registrado_por' => Auth::id()]);
 
@@ -59,7 +66,7 @@ class GastoOperativoController extends Controller
 
     public function edit(GastoOperativo $gasto)
     {
-        $categorias = CategoriaGasto::orderBy('nombre')->get();
+        $categorias = CategoriaGasto::orderBy('nombre_categoria')->get();
         $clientes = Cliente::activos()->with('user')->get();
 
         return view('gastos.edit', compact('gasto', 'categorias', 'clientes'));
@@ -70,11 +77,20 @@ class GastoOperativoController extends Controller
         $validated = $request->validate([
             'categoria_gasto_id' => ['required', 'exists:categorias_gastos,id'],
             'cliente_id' => ['nullable', 'exists:clientes,id'],
-            'concepto' => ['required', 'string', 'max:150'],
+            'concepto_gasto' => ['required', 'string', 'max:200'],
             'monto' => ['required', 'numeric', 'min:0'],
             'fecha_gasto' => ['required', 'date'],
-            'notas' => ['nullable', 'string', 'max:255'],
+            'forma_pago' => ['required', 'in:' . implode(',', GastoOperativo::FORMA_PAGO)],
+            'comprobante' => ['nullable', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:5120'],
+            'observaciones' => ['nullable', 'string'],
         ]);
+
+        if ($request->hasFile('comprobante')) {
+            if ($gasto->comprobante) {
+                Storage::disk('public')->delete($gasto->comprobante);
+            }
+            $validated['comprobante'] = $request->file('comprobante')->store('comprobantes-gastos', 'public');
+        }
 
         $gasto->update($validated);
 
@@ -84,6 +100,10 @@ class GastoOperativoController extends Controller
 
     public function destroy(GastoOperativo $gasto)
     {
+        if ($gasto->comprobante) {
+            Storage::disk('public')->delete($gasto->comprobante);
+        }
+
         $gasto->delete();
 
         return redirect()->route('gastos.index')

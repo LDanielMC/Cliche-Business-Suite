@@ -18,25 +18,27 @@ class AutoAprobarFotos extends Command
     public function handle(): int
     {
         $paquetes = PaqueteAprobacion::with('fotos')
-            ->where('estado', PaqueteAprobacion::ESTADO_PENDIENTE)
+            ->where('estatus', PaqueteAprobacion::ESTATUS_PENDIENTE)
             ->whereDate('fecha_limite', '<', now()->toDateString())
             ->get();
 
         foreach ($paquetes as $paquete) {
             $seleccionadas = $paquete->fotos()
-                ->orderBy('orden')
+                ->where('estatus', FotoAprobacion::ESTATUS_PENDIENTE)
+                ->orderBy('id')
                 ->limit($paquete->cantidad_requerida)
                 ->pluck('id');
 
             FotoAprobacion::where('paquete_aprobacion_id', $paquete->id)
                 ->whereIn('id', $seleccionadas)
-                ->update(['estado' => FotoAprobacion::ESTADO_APROBADA]);
+                ->update(['estatus' => FotoAprobacion::ESTATUS_APROBADA]);
 
             FotoAprobacion::where('paquete_aprobacion_id', $paquete->id)
+                ->where('estatus', FotoAprobacion::ESTATUS_PENDIENTE)
                 ->whereNotIn('id', $seleccionadas)
-                ->update(['estado' => FotoAprobacion::ESTADO_DESCARTADA]);
+                ->update(['estatus' => FotoAprobacion::ESTATUS_DESCARTADA]);
 
-            $paquete->update(['estado' => PaqueteAprobacion::ESTADO_AUTO_APROBADO]);
+            $paquete->update(['estatus' => PaqueteAprobacion::ESTATUS_AUTO_APROBADO]);
             $paquete->publicarEnCalendario();
 
             $this->info("Paquete #{$paquete->id} (cliente {$paquete->cliente_id}) auto-aprobado con {$seleccionadas->count()} fotografías.");

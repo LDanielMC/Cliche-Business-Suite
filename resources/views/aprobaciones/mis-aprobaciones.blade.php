@@ -44,14 +44,14 @@
                 <tbody>
                     @foreach($paquetes as $paquete)
                         <tr>
-                            <td>{{ $paquete->mes }}/{{ $paquete->anio }}</td>
+                            <td>{{ ucfirst($paquete->mes_revision_legible) }}</td>
                             <td>{{ $paquete->cantidad_requerida }}</td>
                             <td>{{ $paquete->fotos_count }}</td>
                             <td>{{ $paquete->fecha_limite->format('d/m/Y') }}</td>
-                            <td><span class="badge badge-{{ $paquete->estado }}">{{ str_replace('_', ' ', $paquete->estado) }}</span></td>
+                            <td><span class="badge badge-{{ $paquete->estatus }}">{{ str_replace('_', ' ', $paquete->estatus) }}</span></td>
                             <td>
                                 <a href="{{ route('cliente.aprobaciones.show', $paquete) }}" class="btn-secondary">
-                                    {{ $paquete->estado === 'pendiente' ? 'Seleccionar Fotos' : 'Ver Detalle' }}
+                                    {{ $paquete->estatus === 'pendiente' ? 'Seleccionar Fotos' : 'Ver Detalle' }}
                                 </a>
                             </td>
                         </tr>

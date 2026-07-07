@@ -4,18 +4,23 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Storage;
 
 class GastoOperativo extends Model
 {
+    const FORMA_PAGO = ['efectivo', 'transferencia', 'tarjeta', 'otro'];
+
     protected $table = 'gastos_operativos';
 
     protected $fillable = [
+        'concepto_gasto',
         'categoria_gasto_id',
-        'cliente_id',
-        'concepto',
         'monto',
         'fecha_gasto',
-        'notas',
+        'cliente_id',
+        'comprobante',
+        'forma_pago',
+        'observaciones',
         'registrado_por',
     ];
 
@@ -50,5 +55,10 @@ class GastoOperativo extends Model
     public function scopeDelCliente($query, int $clienteId)
     {
         return $query->where('cliente_id', $clienteId);
+    }
+
+    public function getComprobanteUrlAttribute(): ?string
+    {
+        return $this->comprobante ? Storage::disk('public')->url($this->comprobante) : null;
     }
 }

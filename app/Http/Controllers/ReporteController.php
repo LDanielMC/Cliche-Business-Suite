@@ -58,7 +58,7 @@ class ReporteController extends Controller
         [$desde, $hasta] = $this->rangoFechas($request);
         $categoriaId = $request->input('categoria_gasto_id');
         $filas = $this->calcularGastosPorCategoria($desde, $hasta, $categoriaId);
-        $categorias = CategoriaGasto::orderBy('nombre')->get();
+        $categorias = CategoriaGasto::orderBy('nombre_categoria')->get();
 
         return view('reportes.gastos-operativos', compact('filas', 'desde', 'hasta', 'categorias', 'categoriaId'));
     }
@@ -99,7 +99,7 @@ class ReporteController extends Controller
 
     private function calcularFinanciero(\Carbon\Carbon $desde, \Carbon\Carbon $hasta): array
     {
-        $ingresosPorMes = PagoCliente::whereBetween('fecha_pago', [$desde, $hasta])
+        $ingresosPorMes = PagoCliente::pagados()->whereBetween('fecha_pago', [$desde, $hasta])
             ->selectRaw("DATE_FORMAT(fecha_pago, '%Y-%m') as periodo, SUM(monto) as total")
             ->groupBy('periodo')->pluck('total', 'periodo');
 
@@ -151,7 +151,7 @@ class ReporteController extends Controller
         $filas = [];
 
         foreach ($clientes as $cliente) {
-            $ingresos = (float) PagoCliente::where('cliente_id', $cliente->id)
+            $ingresos = (float) PagoCliente::pagados()->where('cliente_id', $cliente->id)
                 ->whereBetween('fecha_pago', [$desde, $hasta])
                 ->sum('monto');
 
@@ -234,7 +234,7 @@ class ReporteController extends Controller
             $query->where('categoria_gasto_id', $categoriaId);
         }
 
-        $porCategoria = $query->get()->groupBy(fn ($g) => $g->categoria->nombre);
+        $porCategoria = $query->get()->groupBy(fn ($g) => $g->categoria->nombre_categoria);
 
         $total = $porCategoria->flatten()->sum('monto');
 

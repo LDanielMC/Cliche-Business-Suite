@@ -14,9 +14,9 @@ return new class extends Migration
         Schema::create('fotos_aprobacion', function (Blueprint $table) {
             $table->id();
             $table->foreignId('paquete_aprobacion_id')->constrained('paquetes_aprobacion')->cascadeOnDelete();
-            $table->string('ruta_imagen');
-            $table->enum('estado', ['pendiente', 'seleccionada', 'aprobada', 'descartada'])->default('pendiente');
-            $table->unsignedInteger('orden')->nullable();
+            $table->string('ruta_foto');
+            $table->enum('estatus', ['pendiente', 'aprobada', 'descartada', 'conservada'])->default('pendiente');
+            $table->text('comentarios')->nullable();
             $table->timestamps();
         });
     }

@@ -23,6 +23,10 @@
     th { background: #f8f9fa; color: #666; font-size: 13px; text-transform: uppercase; }
     tr:hover { background: #f8f9fa; }
     .actions { display: flex; gap: 6px; }
+    .badge { padding: 5px 10px; border-radius: 5px; font-size: 12px; font-weight: 500; text-transform: capitalize; }
+    .badge-pagado { background: #d4edda; color: #155724; }
+    .badge-pendiente { background: #fff3cd; color: #856404; }
+    .badge-vencido { background: #f8d7da; color: #721c24; }
     .empty-state { text-align: center; padding: 50px; color: #666; }
     .pagination { margin-top: 20px; }
 </style>
@@ -46,11 +50,20 @@
             </select>
         </div>
         <div class="form-group">
-            <label for="desde">Desde</label>
+            <label for="estatus">Estatus</label>
+            <select id="estatus" name="estatus">
+                <option value="">Todos</option>
+                @foreach(\App\Models\PagoCliente::ESTATUS as $estatusOpcion)
+                    <option value="{{ $estatusOpcion }}" @selected(request('estatus') == $estatusOpcion)>{{ ucfirst($estatusOpcion) }}</option>
+                @endforeach
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="desde">Vencimiento desde</label>
             <input type="date" id="desde" name="desde" value="{{ request('desde') }}">
         </div>
         <div class="form-group">
-            <label for="hasta">Hasta</label>
+            <label for="hasta">Vencimiento hasta</label>
             <input type="date" id="hasta" name="hasta" value="{{ request('hasta') }}">
         </div>
         <div class="form-group">
@@ -64,10 +77,12 @@
                 <thead>
                     <tr>
                         <th>Cliente</th>
-                        <th>Monto</th>
-                        <th>Fecha</th>
-                        <th>Método</th>
                         <th>Concepto</th>
+                        <th>Monto</th>
+                        <th>Periodo</th>
+                        <th>Vencimiento</th>
+                        <th>Fecha de Pago</th>
+                        <th>Estatus</th>
                         <th>Acciones</th>
                     </tr>
                 </thead>
@@ -75,10 +90,12 @@
                     @foreach($pagos as $pago)
                         <tr>
                             <td>{{ $pago->cliente->nombre_negocio }}</td>
+                            <td>{{ $pago->concepto_servicio }}</td>
                             <td>${{ number_format($pago->monto, 2) }}</td>
-                            <td>{{ $pago->fecha_pago->format('d/m/Y') }}</td>
-                            <td>{{ $pago->metodo_pago ?? 'N/A' }}</td>
-                            <td>{{ $pago->concepto ?? 'N/A' }}</td>
+                            <td>{{ $pago->periodo_facturado }}</td>
+                            <td>{{ $pago->fecha_vencimiento->format('d/m/Y') }}</td>
+                            <td>{{ $pago->fecha_pago?->format('d/m/Y') ?? 'N/A' }}</td>
+                            <td><span class="badge badge-{{ $pago->estatus }}">{{ $pago->estatus }}</span></td>
                             <td class="actions">
                                 <a href="{{ route('pagos.edit', $pago) }}" class="btn-warning">Editar</a>
                                 <form action="{{ route('pagos.destroy', $pago) }}" method="POST" onsubmit="return confirm('¿Eliminar este pago?');">

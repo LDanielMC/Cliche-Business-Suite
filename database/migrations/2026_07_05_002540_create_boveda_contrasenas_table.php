@@ -13,11 +13,15 @@ return new class extends Migration
     {
         Schema::create('boveda_contrasenas', function (Blueprint $table) {
             $table->id();
-            $table->string('nombre_servicio', 150);
-            $table->string('url')->nullable();
+            $table->foreignId('cliente_id')->constrained('clientes')->cascadeOnDelete();
+            $table->string('nombre_plataforma', 100);
+            $table->string('url_acceso')->nullable();
             $table->string('usuario', 150);
+            // El diccionario define VARCHAR(255), pero el cifrado de Laravel
+            // produce cadenas más largas (~350-500 car.); se usa TEXT para no truncar el valor cifrado.
             $table->text('password');
-            $table->string('notas')->nullable();
+            $table->string('correo_asociado', 150)->nullable();
+            $table->text('observaciones')->nullable();
             $table->foreignId('creado_por')->constrained('users')->cascadeOnDelete();
             $table->timestamps();
         });

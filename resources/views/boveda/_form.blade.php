@@ -6,17 +6,42 @@
 
 <div class="form-row">
     <div class="form-group col-2">
-        <label for="nombre_servicio">Servicio / Plataforma *</label>
-        <input type="text" id="nombre_servicio" name="nombre_servicio" class="form-control @error('nombre_servicio') error @enderror" value="{{ old('nombre_servicio', $credencial->nombre_servicio ?? '') }}" maxlength="150" required>
-        @error('nombre_servicio')
+        <label for="cliente_id">Cliente *</label>
+        <select id="cliente_id" name="cliente_id" class="form-control @error('cliente_id') error @enderror" required>
+            <option value="">Selecciona un cliente</option>
+            @foreach($clientes as $cliente)
+                <option value="{{ $cliente->id }}" @selected(old('cliente_id', $credencial->cliente_id ?? '') == $cliente->id)>
+                    {{ $cliente->nombre_negocio }}
+                </option>
+            @endforeach
+        </select>
+        @error('cliente_id')
             <span class="error-message">{{ $message }}</span>
         @enderror
     </div>
 
     <div class="form-group col-2">
-        <label for="url">URL</label>
-        <input type="text" id="url" name="url" class="form-control @error('url') error @enderror" value="{{ old('url', $credencial->url ?? '') }}" maxlength="255" placeholder="https://...">
-        @error('url')
+        <label for="nombre_plataforma">Plataforma / Servicio *</label>
+        <input type="text" id="nombre_plataforma" name="nombre_plataforma" class="form-control @error('nombre_plataforma') error @enderror" value="{{ old('nombre_plataforma', $credencial->nombre_plataforma ?? '') }}" maxlength="100" required>
+        @error('nombre_plataforma')
+            <span class="error-message">{{ $message }}</span>
+        @enderror
+    </div>
+</div>
+
+<div class="form-row">
+    <div class="form-group col-2">
+        <label for="url_acceso">URL de Acceso</label>
+        <input type="text" id="url_acceso" name="url_acceso" class="form-control @error('url_acceso') error @enderror" value="{{ old('url_acceso', $credencial->url_acceso ?? '') }}" maxlength="255" placeholder="https://...">
+        @error('url_acceso')
+            <span class="error-message">{{ $message }}</span>
+        @enderror
+    </div>
+
+    <div class="form-group col-2">
+        <label for="correo_asociado">Correo Asociado</label>
+        <input type="email" id="correo_asociado" name="correo_asociado" class="form-control @error('correo_asociado') error @enderror" value="{{ old('correo_asociado', $credencial->correo_asociado ?? '') }}" maxlength="150">
+        @error('correo_asociado')
             <span class="error-message">{{ $message }}</span>
         @enderror
     </div>
@@ -44,9 +69,9 @@
 </div>
 
 <div class="form-group">
-    <label for="notas">Notas</label>
-    <input type="text" id="notas" name="notas" class="form-control @error('notas') error @enderror" value="{{ old('notas', $credencial->notas ?? '') }}" maxlength="255">
-    @error('notas')
+    <label for="observaciones">Observaciones</label>
+    <textarea id="observaciones" name="observaciones" class="form-control @error('observaciones') error @enderror" rows="3">{{ old('observaciones', $credencial->observaciones ?? '') }}</textarea>
+    @error('observaciones')
         <span class="error-message">{{ $message }}</span>
     @enderror
 </div>

@@ -29,7 +29,7 @@
     <div class="form-card">
         <h1>Editar Publicación</h1>
 
-        <form method="POST" action="{{ route('calendario.update', $publicacion) }}">
+        <form method="POST" action="{{ route('calendario.update', $publicacion) }}" enctype="multipart/form-data">
             @include('calendario._form', ['edit' => true, 'publicacion' => $publicacion, 'clientes' => $clientes])
         </form>
     </div>

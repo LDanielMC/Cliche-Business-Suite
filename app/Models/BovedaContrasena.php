@@ -10,11 +10,13 @@ class BovedaContrasena extends Model
     protected $table = 'boveda_contrasenas';
 
     protected $fillable = [
-        'nombre_servicio',
-        'url',
+        'cliente_id',
+        'nombre_plataforma',
+        'url_acceso',
         'usuario',
         'password',
-        'notas',
+        'correo_asociado',
+        'observaciones',
         'creado_por',
     ];
 
@@ -23,6 +25,11 @@ class BovedaContrasena extends Model
         return [
             'password' => 'encrypted',
         ];
+    }
+
+    public function cliente(): BelongsTo
+    {
+        return $this->belongsTo(Cliente::class);
     }
 
     public function creador(): BelongsTo

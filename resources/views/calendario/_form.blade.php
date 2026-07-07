@@ -21,32 +21,43 @@
     </div>
 
     <div class="form-group col-2">
-        <label for="fecha_publicacion">Fecha de Publicación *</label>
-        <input type="date" id="fecha_publicacion" name="fecha_publicacion" class="form-control @error('fecha_publicacion') error @enderror" value="{{ old('fecha_publicacion', isset($publicacion) ? $publicacion->fecha_publicacion->format('Y-m-d') : '') }}" required>
-        @error('fecha_publicacion')
+        <label for="fecha_publicacion_programada">Fecha y Hora de Publicación *</label>
+        <input type="datetime-local" id="fecha_publicacion_programada" name="fecha_publicacion_programada" class="form-control @error('fecha_publicacion_programada') error @enderror" value="{{ old('fecha_publicacion_programada', isset($publicacion) ? $publicacion->fecha_publicacion_programada->format('Y-m-d\TH:i') : '') }}" required>
+        @error('fecha_publicacion_programada')
             <span class="error-message">{{ $message }}</span>
         @enderror
     </div>
 </div>
 
 <div class="form-group">
-    <label for="descripcion">Descripción</label>
-    <input type="text" id="descripcion" name="descripcion" class="form-control @error('descripcion') error @enderror" value="{{ old('descripcion', $publicacion->descripcion ?? '') }}" maxlength="255">
-    @error('descripcion')
+    <label for="fotografia_asociada">Fotografía {{ $edit ? '(deja en blanco para conservar la actual)' : '*' }}</label>
+    <input type="file" id="fotografia_asociada" name="fotografia_asociada" class="form-control @error('fotografia_asociada') error @enderror" accept="image/*" @if(!$edit) required @endif>
+    @if($edit && $publicacion->fotografia_asociada)
+        <img src="{{ $publicacion->fotografia_url }}" alt="Foto actual" style="max-width:150px; margin-top:10px; border-radius:8px;">
+    @endif
+    @error('fotografia_asociada')
         <span class="error-message">{{ $message }}</span>
     @enderror
 </div>
 
 <div class="form-group">
-    <label for="estado">Estado *</label>
-    <select id="estado" name="estado" class="form-control @error('estado') error @enderror" required>
-        @foreach(\App\Models\CalendarioFoto::ESTADOS as $estadoOpcion)
-            <option value="{{ $estadoOpcion }}" @selected(old('estado', $publicacion->estado ?? 'programada') == $estadoOpcion)>
-                {{ ucfirst($estadoOpcion) }}
+    <label for="estatus">Estatus *</label>
+    <select id="estatus" name="estatus" class="form-control @error('estatus') error @enderror" required>
+        @foreach(\App\Models\CalendarioFoto::ESTATUS as $estatusOpcion)
+            <option value="{{ $estatusOpcion }}" @selected(old('estatus', $publicacion->estatus ?? 'programada') == $estatusOpcion)>
+                {{ ucfirst($estatusOpcion) }}
             </option>
         @endforeach
     </select>
-    @error('estado')
+    @error('estatus')
+        <span class="error-message">{{ $message }}</span>
+    @enderror
+</div>
+
+<div class="form-group">
+    <label for="observaciones">Observaciones</label>
+    <textarea id="observaciones" name="observaciones" class="form-control @error('observaciones') error @enderror" rows="3">{{ old('observaciones', $publicacion->observaciones ?? '') }}</textarea>
+    @error('observaciones')
         <span class="error-message">{{ $message }}</span>
     @enderror
 </div>

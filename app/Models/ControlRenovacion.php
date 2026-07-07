@@ -7,10 +7,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class ControlRenovacion extends Model
 {
-    const ESTADO_VIGENTE = 'vigente';
-    const ESTADO_POR_VENCER = 'por_vencer';
-    const ESTADO_VENCIDO = 'vencido';
-    const ESTADO_RENOVADO = 'renovado';
+    const ESTATUS_VIGENTE = 'vigente';
+    const ESTATUS_POR_VENCER = 'por_vencer';
+    const ESTATUS_VENCIDO = 'vencido';
+
+    const ESTATUS = [self::ESTATUS_VIGENTE, self::ESTATUS_POR_VENCER, self::ESTATUS_VENCIDO];
 
     protected $table = 'control_renovaciones';
 
@@ -18,10 +19,9 @@ class ControlRenovacion extends Model
         'cliente_id',
         'fecha_inicio',
         'fecha_vencimiento',
-        'duracion_meses',
-        'estado',
-        'fecha_renovacion',
-        'notificado_at',
+        'estatus',
+        'fecha_recordatorio',
+        'observaciones',
     ];
 
     protected function casts(): array
@@ -29,9 +29,7 @@ class ControlRenovacion extends Model
         return [
             'fecha_inicio' => 'date',
             'fecha_vencimiento' => 'date',
-            'fecha_renovacion' => 'date',
-            'notificado_at' => 'datetime',
-            'duracion_meses' => 'integer',
+            'fecha_recordatorio' => 'date',
         ];
     }
 

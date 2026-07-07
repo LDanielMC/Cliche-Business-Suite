@@ -54,12 +54,20 @@
                     @enderror
                 </div>
                 <div class="form-group">
-                    <label for="duracion_meses">Duración (meses) *</label>
-                    <input type="number" id="duracion_meses" name="duracion_meses" min="1" max="12" class="form-control @error('duracion_meses') error @enderror" value="{{ old('duracion_meses', 1) }}" required>
-                    @error('duracion_meses')
+                    <label for="meses">Duración (meses) *</label>
+                    <input type="number" id="meses" name="meses" min="1" max="12" class="form-control @error('meses') error @enderror" value="{{ old('meses', 1) }}" required>
+                    @error('meses')
                         <span class="error-message">{{ $message }}</span>
                     @enderror
                 </div>
+            </div>
+
+            <div class="form-group">
+                <label for="observaciones">Observaciones</label>
+                <textarea id="observaciones" name="observaciones" class="form-control @error('observaciones') error @enderror" rows="3">{{ old('observaciones') }}</textarea>
+                @error('observaciones')
+                    <span class="error-message">{{ $message }}</span>
+                @enderror
             </div>
 
             <div class="form-actions">

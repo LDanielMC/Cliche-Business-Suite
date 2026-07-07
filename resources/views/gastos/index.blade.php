@@ -45,7 +45,7 @@
             <select id="categoria_gasto_id" name="categoria_gasto_id">
                 <option value="">Todas</option>
                 @foreach($categorias as $categoria)
-                    <option value="{{ $categoria->id }}" @selected(request('categoria_gasto_id') == $categoria->id)>{{ $categoria->nombre }}</option>
+                    <option value="{{ $categoria->id }}" @selected(request('categoria_gasto_id') == $categoria->id)>{{ $categoria->nombre_categoria }}</option>
                 @endforeach
             </select>
         </div>
@@ -72,17 +72,27 @@
                         <th>Cliente</th>
                         <th>Monto</th>
                         <th>Fecha</th>
+                        <th>Forma de Pago</th>
+                        <th>Comprobante</th>
                         <th>Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach($gastos as $gasto)
                         <tr>
-                            <td>{{ $gasto->concepto }}</td>
-                            <td>{{ $gasto->categoria->nombre }}</td>
+                            <td>{{ $gasto->concepto_gasto }}</td>
+                            <td>{{ $gasto->categoria->nombre_categoria }}</td>
                             <td>{{ $gasto->cliente->nombre_negocio ?? 'General' }}</td>
                             <td>${{ number_format($gasto->monto, 2) }}</td>
                             <td>{{ $gasto->fecha_gasto->format('d/m/Y') }}</td>
+                            <td>{{ ucfirst($gasto->forma_pago) }}</td>
+                            <td>
+                                @if($gasto->comprobante)
+                                    <a href="{{ $gasto->comprobante_url }}" target="_blank">Ver</a>
+                                @else
+                                    N/A
+                                @endif
+                            </td>
                             <td class="actions">
                                 <a href="{{ route('gastos.edit', $gasto) }}" class="btn-warning">Editar</a>
                                 <form action="{{ route('gastos.destroy', $gasto) }}" method="POST" onsubmit="return confirm('¿Eliminar este gasto?');">

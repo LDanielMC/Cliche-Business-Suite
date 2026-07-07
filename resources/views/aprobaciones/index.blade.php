@@ -51,11 +51,11 @@
                     @foreach($paquetes as $paquete)
                         <tr>
                             <td>{{ $paquete->cliente->nombre_negocio }}</td>
-                            <td>{{ $paquete->mes }}/{{ $paquete->anio }}</td>
+                            <td>{{ ucfirst($paquete->mes_revision_legible) }}</td>
                             <td>{{ $paquete->cantidad_requerida }}</td>
                             <td>{{ $paquete->fotos_count }}</td>
                             <td>{{ $paquete->fecha_limite->format('d/m/Y') }}</td>
-                            <td><span class="badge badge-{{ $paquete->estado }}">{{ str_replace('_', ' ', $paquete->estado) }}</span></td>
+                            <td><span class="badge badge-{{ $paquete->estatus }}">{{ str_replace('_', ' ', $paquete->estatus) }}</span></td>
                             <td class="actions">
                                 <a href="{{ route('aprobaciones.show', $paquete) }}" class="btn-secondary">Ver / Subir Fotos</a>
                                 <form action="{{ route('aprobaciones.destroy', $paquete) }}" method="POST" onsubmit="return confirm('¿Eliminar este paquete y sus fotografías?');">

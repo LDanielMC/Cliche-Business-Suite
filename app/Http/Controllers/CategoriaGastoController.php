@@ -10,7 +10,7 @@ class CategoriaGastoController extends Controller
 {
     public function index()
     {
-        $categorias = CategoriaGasto::withCount('gastos')->orderBy('nombre')->paginate(10);
+        $categorias = CategoriaGasto::withCount('gastos')->orderBy('nombre_categoria')->paginate(10);
 
         return view('categorias-gastos.index', compact('categorias'));
     }
@@ -23,8 +23,7 @@ class CategoriaGastoController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'nombre' => ['required', 'string', 'max:100', 'unique:categorias_gastos,nombre'],
-            'descripcion' => ['nullable', 'string', 'max:255'],
+            'nombre_categoria' => ['required', 'string', 'max:100', 'unique:categorias_gastos,nombre_categoria'],
         ]);
 
         CategoriaGasto::create($validated);
@@ -41,8 +40,7 @@ class CategoriaGastoController extends Controller
     public function update(Request $request, CategoriaGasto $categoria)
     {
         $validated = $request->validate([
-            'nombre' => ['required', 'string', 'max:100', Rule::unique('categorias_gastos', 'nombre')->ignore($categoria->id)],
-            'descripcion' => ['nullable', 'string', 'max:255'],
+            'nombre_categoria' => ['required', 'string', 'max:100', Rule::unique('categorias_gastos', 'nombre_categoria')->ignore($categoria->id)],
         ]);
 
         $categoria->update($validated);

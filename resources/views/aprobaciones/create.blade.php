@@ -47,25 +47,25 @@
 
             <div class="form-row">
                 <div class="form-group">
-                    <label for="mes">Mes *</label>
-                    <input type="number" id="mes" name="mes" min="1" max="12" class="form-control @error('mes') error @enderror" value="{{ old('mes', now()->month) }}" required>
-                    @error('mes')
+                    <label for="mes_revision">Mes de Revisión *</label>
+                    <input type="month" id="mes_revision" name="mes_revision" class="form-control @error('mes_revision') error @enderror" value="{{ old('mes_revision', now()->format('Y-m')) }}" required>
+                    @error('mes_revision')
                         <span class="error-message">{{ $message }}</span>
                     @enderror
                 </div>
                 <div class="form-group">
-                    <label for="anio">Año *</label>
-                    <input type="number" id="anio" name="anio" min="2020" class="form-control @error('anio') error @enderror" value="{{ old('anio', now()->year) }}" required>
-                    @error('anio')
+                    <label for="fecha_limite">Fecha Límite para Selección *</label>
+                    <input type="date" id="fecha_limite" name="fecha_limite" class="form-control @error('fecha_limite') error @enderror" value="{{ old('fecha_limite') }}" required>
+                    @error('fecha_limite')
                         <span class="error-message">{{ $message }}</span>
                     @enderror
                 </div>
             </div>
 
             <div class="form-group">
-                <label for="fecha_limite">Fecha Límite para Selección *</label>
-                <input type="date" id="fecha_limite" name="fecha_limite" class="form-control @error('fecha_limite') error @enderror" value="{{ old('fecha_limite') }}" required>
-                @error('fecha_limite')
+                <label for="observaciones">Observaciones</label>
+                <textarea id="observaciones" name="observaciones" class="form-control @error('observaciones') error @enderror" rows="3">{{ old('observaciones') }}</textarea>
+                @error('observaciones')
                     <span class="error-message">{{ $message }}</span>
                 @enderror
             </div>
