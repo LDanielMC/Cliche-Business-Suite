@@ -12,46 +12,59 @@ class GastoOperativoSeeder extends Seeder
 {
     public function run(): void
     {
-        $admin = User::where('email', 'admin@sistema.com')->firstOrFail();
-        $categorias = CategoriaGasto::all()->keyBy('nombre_categoria');
-        $clientes = Cliente::all();
+        $admin    = User::where('email', 'admin@sistema.com')->firstOrFail();
+        $cats     = CategoriaGasto::all()->keyBy('nombre');
+        $activos  = Cliente::activos()->get();
 
-        $gastosGenerales = [
-            ['Publicidad Digital', 'Campaña de anuncios en redes sociales', 1200.00, 'transferencia'],
-            ['Herramientas SEO', 'Licencia mensual SEMrush', 890.00, 'tarjeta'],
-            ['Suscripciones y Software', 'Suscripción Canva Pro equipo', 350.00, 'tarjeta'],
-            ['Equipo Fotográfico', 'Mantenimiento de cámara réflex', 600.00, 'efectivo'],
-            ['Transporte', 'Gasolina para visitas a clientes', 450.00, 'efectivo'],
+        // ── Gastos generales — 2 meses de historia ─────────────────────────────
+        // Set reducido a propósito: solo un ejemplo por categoría principal,
+        // suficiente para probar reportes sin saturar el listado de gastos.
+        $gastosGeneralesPorMes = [
+            ['Publicidad Digital',       'Campaña de anuncios en redes sociales',           1200.00, 'transferencia'],
+            ['Suscripciones y Software',  'Suscripción Canva Pro equipo',                     350.00, 'tarjeta'],
+            ['Equipo Fotográfico',        'Mantenimiento de cámara réflex y lentes',          600.00, 'efectivo'],
+            ['Gastos Administrativos',   'Papelería e insumos de oficina',                   180.00, 'efectivo'],
         ];
 
-        foreach (range(0, 2) as $mesesAtras) {
-            $fecha = now()->subMonths($mesesAtras)->startOfMonth()->addDays(random_int(2, 20));
+        for ($mesesAtras = 1; $mesesAtras >= 0; $mesesAtras--) {
+            $baseDate = now()->subMonths($mesesAtras)->startOfMonth();
 
-            foreach ($gastosGenerales as [$categoriaNombre, $concepto, $monto, $formaPago]) {
+            foreach ($gastosGeneralesPorMes as [$cat, $concepto, $monto, $formaPago]) {
+                // Pequeña variación en monto mes a mes para que las gráficas no sean planas
+                $montoVariado = round($monto * (1 + (($mesesAtras % 3) * 0.05)), 2);
+
                 GastoOperativo::create([
-                    'concepto_gasto' => $concepto,
-                    'categoria_gasto_id' => $categorias[$categoriaNombre]->id,
-                    'monto' => $monto,
-                    'fecha_gasto' => $fecha->copy()->addDays(random_int(0, 5)),
-                    'cliente_id' => null,
-                    'forma_pago' => $formaPago,
-                    'observaciones' => 'Gasto operativo general de la agencia.',
-                    'registrado_por' => $admin->id,
+                    'concepto_gasto'    => $concepto,
+                    'categoria_gasto_id' => $cats[$cat]->id,
+                    'monto'             => $montoVariado,
+                    'fecha_gasto'       => $baseDate->copy()->addDays(3),
+                    'cliente_id'        => null,
+                    'forma_pago'        => $formaPago,
+                    'observaciones'     => 'Gasto operativo general de la agencia.',
+                    'registrado_por'    => $admin->id,
                 ]);
             }
 
-            // Gastos directos asociados a un cliente específico (para el reporte de rentabilidad).
-            foreach ($clientes as $cliente) {
-                GastoOperativo::create([
-                    'concepto_gasto' => 'Impresión de material promocional',
-                    'categoria_gasto_id' => $categorias['Publicidad Digital']->id,
-                    'monto' => random_int(150, 400),
-                    'fecha_gasto' => $fecha->copy()->addDays(random_int(0, 10)),
-                    'cliente_id' => $cliente->id,
-                    'forma_pago' => 'efectivo',
-                    'observaciones' => 'Gasto directo del cliente ' . $cliente->nombre_negocio . '.',
-                    'registrado_por' => $admin->id,
-                ]);
+            // ── Gastos directos — solo el mes más reciente, uno por cliente activo ──
+            // Un ejemplo simple del prorrateo de FN.11 (rentabilidad), sin llenar
+            // el listado con un registro por cliente por cada mes de historia.
+            if ($mesesAtras === 0) {
+                foreach ($activos as $cliente) {
+                    if ($baseDate->lt($cliente->fecha_registro)) {
+                        continue;
+                    }
+
+                    GastoOperativo::create([
+                        'concepto_gasto'    => 'Producción fotográfica mensual',
+                        'categoria_gasto_id' => $cats['Equipo Fotográfico']->id,
+                        'monto'             => round($cliente->precio_mensual * 0.08, 2), // 8% del precio
+                        'fecha_gasto'       => $baseDate->copy()->addDays(5),
+                        'cliente_id'        => $cliente->id,
+                        'forma_pago'        => 'efectivo',
+                        'observaciones'     => 'Gasto directo: sesión fotográfica para ' . $cliente->nombre_negocio . '.',
+                        'registrado_por'    => $admin->id,
+                    ]);
+                }
             }
         }
     }

@@ -2,79 +2,112 @@
 
 @section('title', 'Nuevo Paquete de Aprobación')
 
-@section('styles')
-<style>
-    .form-container { max-width: 700px; margin: 0 auto; padding: 25px; }
-    .form-card { background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-    .form-card h1 { color: #333; margin-bottom: 25px; font-size: 24px; }
-    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-    .form-group { margin-bottom: 20px; }
-    .form-group label { display: block; margin-bottom: 8px; color: #555; font-weight: 500; }
-    .form-control { width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 15px; }
-    .form-control:focus { outline: none; border-color: #667eea; }
-    .form-control.error { border-color: #dc3545; }
-    .error-message { color: #dc3545; font-size: 13px; margin-top: 5px; }
-    .form-actions { display: flex; justify-content: flex-end; gap: 15px; margin-top: 30px; }
-    .btn { padding: 12px 25px; border-radius: 8px; text-decoration: none; font-weight: 500; border: none; cursor: pointer; font-size: 15px; }
-    .btn-primary { background: #667eea; color: white; }
-    .btn-secondary { background: #6c757d; color: white; }
-    @media (max-width: 768px) { .form-row { grid-template-columns: 1fr; } }
-</style>
+@section('breadcrumbs')
+    <div class="breadcrumbs">
+        <div class="breadcrumb-item">
+            <a href="{{ route('aprobaciones.index') }}" class="breadcrumb-link">Aprobaciones</a>
+            <span class="breadcrumb-separator">/</span>
+        </div>
+        <div class="breadcrumb-item">
+            <span class="breadcrumb-current">Nuevo Paquete</span>
+        </div>
+    </div>
 @endsection
 
 @section('content')
-<div class="form-container">
-    <div class="form-card">
-        <h1>Nuevo Paquete de Aprobación</h1>
+<div class="max-w-3xl mx-auto">
+    <div class="page-header">
+        <div class="page-title-section">
+            <h1 class="page-title">Nuevo Paquete de Aprobación</h1>
+            <p class="page-subtitle">Crea un paquete mensual de fotos para un cliente</p>
+        </div>
+    </div>
 
-        <form method="POST" action="{{ route('aprobaciones.store') }}">
-            @csrf
+    <div class="card">
+        <div class="card-body">
+            @if($clientes->isEmpty())
+                <div class="empty-state">
+                    <p class="empty-state-description">
+                        No hay clientes elegibles en este momento. Un cliente aparece aquí solo si está activo,
+                        tiene una renovación vigente o por vencer, y no tiene ya un paquete abierto (borrador o en revisión).
+                    </p>
+                </div>
+            @else
+            <form method="POST" action="{{ route('aprobaciones.store') }}">
+                @csrf
 
-            <div class="form-group">
-                <label for="cliente_id">Cliente *</label>
-                <select id="cliente_id" name="cliente_id" class="form-control @error('cliente_id') error @enderror" required>
-                    <option value="">Selecciona un cliente</option>
-                    @foreach($clientes as $cliente)
-                        <option value="{{ $cliente->id }}" @selected(old('cliente_id') == $cliente->id)>
-                            {{ $cliente->nombre_negocio }} (cuota: {{ $cliente->cantidad_fotos }} fotos/mes)
-                        </option>
-                    @endforeach
-                </select>
-                @error('cliente_id')
-                    <span class="error-message">{{ $message }}</span>
-                @enderror
-            </div>
-
-            <div class="form-row">
                 <div class="form-group">
-                    <label for="mes_revision">Mes de Revisión *</label>
-                    <input type="month" id="mes_revision" name="mes_revision" class="form-control @error('mes_revision') error @enderror" value="{{ old('mes_revision', now()->format('Y-m')) }}" required>
+                    <label for="cliente_id" class="form-label">Cliente <span class="required">*</span></label>
+                    <select id="cliente_id" name="cliente_id" class="form-select @error('cliente_id') error @enderror" required>
+                        <option value="">Selecciona un cliente</option>
+                        @foreach($clientes as $cliente)
+                            <option value="{{ $cliente->id }}"
+                                data-mes-revision="{{ $cliente->renovacionActiva->fecha_inicio->format('Y-m') }}"
+                                data-periodo="{{ $cliente->renovacionActiva->fecha_inicio->format('d/m/Y') }} — {{ $cliente->renovacionActiva->fecha_vencimiento->format('d/m/Y') }}"
+                                @selected(old('cliente_id', request('cliente_id')) == $cliente->id)>
+                                {{ $cliente->nombre_negocio }} (cuota: {{ $cliente->cantidad_fotos }} fotos/mes)
+                            </option>
+                        @endforeach
+                    </select>
+                    @error('cliente_id')
+                        <span class="form-error">{{ $message }}</span>
+                    @enderror
+                    <p id="periodo-hint" style="display:none;margin-top:.35rem;font-size:.82rem;color:#6b7280;"></p>
+                </div>
+
+                <div class="form-group">
+                    <label for="mes_revision" class="form-label">Mes de Revisión <span class="required">*</span></label>
+                    <input type="month" id="mes_revision" name="mes_revision" class="form-input @error('mes_revision') error @enderror" value="{{ old('mes_revision') }}" readonly required style="background-color:#f3f4f6;cursor:not-allowed;">
+                    <p style="margin-top:.35rem;font-size:.82rem;color:#6b7280;">Se calcula automáticamente a partir del período de renovación vigente del cliente.</p>
                     @error('mes_revision')
-                        <span class="error-message">{{ $message }}</span>
+                        <span class="form-error">{{ $message }}</span>
                     @enderror
                 </div>
+
                 <div class="form-group">
-                    <label for="fecha_limite">Fecha Límite para Selección *</label>
-                    <input type="date" id="fecha_limite" name="fecha_limite" class="form-control @error('fecha_limite') error @enderror" value="{{ old('fecha_limite') }}" required>
-                    @error('fecha_limite')
-                        <span class="error-message">{{ $message }}</span>
+                    <label for="observaciones" class="form-label">Observaciones</label>
+                    <textarea id="observaciones" name="observaciones" class="form-textarea @error('observaciones') error @enderror" rows="3">{{ old('observaciones') }}</textarea>
+                    @error('observaciones')
+                        <span class="form-error">{{ $message }}</span>
                     @enderror
                 </div>
-            </div>
 
-            <div class="form-group">
-                <label for="observaciones">Observaciones</label>
-                <textarea id="observaciones" name="observaciones" class="form-control @error('observaciones') error @enderror" rows="3">{{ old('observaciones') }}</textarea>
-                @error('observaciones')
-                    <span class="error-message">{{ $message }}</span>
-                @enderror
-            </div>
-
-            <div class="form-actions">
-                <a href="{{ route('aprobaciones.index') }}" class="btn btn-secondary">Cancelar</a>
-                <button type="submit" class="btn btn-primary">Crear Paquete</button>
-            </div>
-        </form>
+                <div class="flex justify-end gap-3 mt-8">
+                    <a href="{{ route('aprobaciones.index') }}" class="btn btn-secondary">Cancelar</a>
+                    <button type="submit" class="btn btn-primary">Crear Paquete</button>
+                </div>
+            </form>
+            @endif
+        </div>
     </div>
 </div>
+
+@section('scripts')
+<script>
+(function () {
+    const select = document.getElementById('cliente_id');
+    const mesInput = document.getElementById('mes_revision');
+    const hint = document.getElementById('periodo-hint');
+    if (!select || !mesInput) return;
+
+    function actualizar() {
+        const opt = select.options[select.selectedIndex];
+        const mes = opt ? opt.dataset.mesRevision : '';
+        const periodo = opt ? opt.dataset.periodo : '';
+
+        mesInput.value = mes || '';
+
+        if (periodo) {
+            hint.textContent = 'Período de renovación: ' + periodo;
+            hint.style.display = 'block';
+        } else {
+            hint.style.display = 'none';
+        }
+    }
+
+    select.addEventListener('change', actualizar);
+    actualizar();
+})();
+</script>
+@endsection
 @endsection

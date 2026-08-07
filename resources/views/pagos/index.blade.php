@@ -1,123 +1,170 @@
 @extends('layouts.app')
 
-@section('title', 'Pagos de Clientes')
+@section('title', 'Historial de Pagos')
 
-@section('styles')
-<style>
-    .clientes-container { padding: 25px; }
-    .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; flex-wrap: wrap; gap: 15px; }
-    .page-header h1 { color: #333; font-size: 28px; }
-    .btn-primary { background: #667eea; color: white; padding: 10px 20px; border-radius: 8px; text-decoration: none; font-weight: 500; }
-    .btn-primary:hover { background: #5a6fd6; }
-    .btn-warning { background: #ffc107; color: #333; padding: 6px 12px; border-radius: 6px; text-decoration: none; font-size: 13px; white-space: nowrap; }
-    .btn-warning:hover { background: #e0a800; }
-    .btn-danger { background: #dc3545; color: white; padding: 6px 12px; border-radius: 6px; border: none; cursor: pointer; font-size: 13px; white-space: nowrap; }
-    .btn-danger:hover { background: #c82333; }
-    .filters { background: white; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); padding: 20px; margin-bottom: 20px; display: flex; gap: 15px; flex-wrap: wrap; align-items: end; }
-    .filters .form-group { margin-bottom: 0; }
-    .filters label { display: block; margin-bottom: 6px; color: #555; font-size: 13px; font-weight: 500; }
-    .filters select, .filters input { padding: 8px 12px; border: 2px solid #e0e0e0; border-radius: 6px; }
-    .table-card { background: white; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); overflow-x: auto; }
-    table { width: 100%; border-collapse: collapse; }
-    th, td { padding: 12px; text-align: left; border-bottom: 1px solid #e0e0e0; white-space: nowrap; }
-    th { background: #f8f9fa; color: #666; font-size: 13px; text-transform: uppercase; }
-    tr:hover { background: #f8f9fa; }
-    .actions { display: flex; gap: 6px; }
-    .badge { padding: 5px 10px; border-radius: 5px; font-size: 12px; font-weight: 500; text-transform: capitalize; }
-    .badge-pagado { background: #d4edda; color: #155724; }
-    .badge-pendiente { background: #fff3cd; color: #856404; }
-    .badge-vencido { background: #f8d7da; color: #721c24; }
-    .empty-state { text-align: center; padding: 50px; color: #666; }
-    .pagination { margin-top: 20px; }
-</style>
+@section('breadcrumbs')
+    <div class="breadcrumbs">
+        <div class="breadcrumb-item">
+            <a href="{{ route('admin.dashboard') }}" class="breadcrumb-link">Dashboard</a>
+            <span class="breadcrumb-separator">/</span>
+        </div>
+        <div class="breadcrumb-item">
+            <span class="breadcrumb-current">Pagos</span>
+        </div>
+    </div>
 @endsection
 
 @section('content')
-<div class="clientes-container">
+<div>
     <div class="page-header">
-        <h1>Pagos de Clientes</h1>
-        <a href="{{ route('pagos.create') }}" class="btn-primary">+ Nuevo Pago</a>
+        <div class="page-title-section">
+            <h1 class="page-title">Historial de Pagos</h1>
+            <p class="page-subtitle">Los pagos se generan automáticamente al validar una renovación</p>
+        </div>
     </div>
 
-    <form method="GET" action="{{ route('pagos.index') }}" class="filters">
-        <div class="form-group">
-            <label for="cliente_id">Cliente</label>
-            <select id="cliente_id" name="cliente_id">
-                <option value="">Todos</option>
-                @foreach($clientes as $cliente)
-                    <option value="{{ $cliente->id }}" @selected(request('cliente_id') == $cliente->id)>{{ $cliente->nombre_negocio }}</option>
-                @endforeach
-            </select>
-        </div>
-        <div class="form-group">
-            <label for="estatus">Estatus</label>
-            <select id="estatus" name="estatus">
-                <option value="">Todos</option>
-                @foreach(\App\Models\PagoCliente::ESTATUS as $estatusOpcion)
-                    <option value="{{ $estatusOpcion }}" @selected(request('estatus') == $estatusOpcion)>{{ ucfirst($estatusOpcion) }}</option>
-                @endforeach
-            </select>
-        </div>
-        <div class="form-group">
-            <label for="desde">Vencimiento desde</label>
-            <input type="date" id="desde" name="desde" value="{{ request('desde') }}">
-        </div>
-        <div class="form-group">
-            <label for="hasta">Vencimiento hasta</label>
-            <input type="date" id="hasta" name="hasta" value="{{ request('hasta') }}">
-        </div>
-        <div class="form-group">
-            <button type="submit" class="btn-primary">Filtrar</button>
-        </div>
-    </form>
+    {{-- Filtros compactos --}}
+    <div class="card mb-5">
+        <div class="card-body" style="padding: .75rem 1.25rem;">
+            <form method="GET" action="{{ route('pagos.index') }}"
+                  style="display:flex; flex-wrap:wrap; gap:.625rem; align-items:flex-end;">
 
-    @if($pagos->count() > 0)
-        <div class="table-card">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Cliente</th>
-                        <th>Concepto</th>
-                        <th>Monto</th>
-                        <th>Periodo</th>
-                        <th>Vencimiento</th>
-                        <th>Fecha de Pago</th>
-                        <th>Estatus</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($pagos as $pago)
-                        <tr>
-                            <td>{{ $pago->cliente->nombre_negocio }}</td>
-                            <td>{{ $pago->concepto_servicio }}</td>
-                            <td>${{ number_format($pago->monto, 2) }}</td>
-                            <td>{{ $pago->periodo_facturado }}</td>
-                            <td>{{ $pago->fecha_vencimiento->format('d/m/Y') }}</td>
-                            <td>{{ $pago->fecha_pago?->format('d/m/Y') ?? 'N/A' }}</td>
-                            <td><span class="badge badge-{{ $pago->estatus }}">{{ $pago->estatus }}</span></td>
-                            <td class="actions">
-                                <a href="{{ route('pagos.edit', $pago) }}" class="btn-warning">Editar</a>
-                                <form action="{{ route('pagos.destroy', $pago) }}" method="POST" onsubmit="return confirm('¿Eliminar este pago?');">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn-danger">Eliminar</button>
-                                </form>
-                            </td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
-        </div>
+                @if(request('sort'))
+                    <input type="hidden" name="sort" value="{{ request('sort') }}">
+                    <input type="hidden" name="dir" value="{{ request('dir') }}">
+                @endif
 
-        <div class="pagination">
-            {{ $pagos->links() }}
+                <div style="flex:2; min-width:160px;">
+                    <label for="q" class="form-label" style="font-size:.7rem; margin-bottom:.2rem;">Buscar</label>
+                    <input type="text" id="q" name="q" data-live-search class="form-input" style="height:2.1rem; padding:.25rem .5rem; font-size:.82rem;"
+                           placeholder="Cliente o concepto..." value="{{ request('q') }}">
+                </div>
+
+                <div style="flex:2; min-width:160px;">
+                    <label for="cliente_id" class="form-label" style="font-size:.7rem; margin-bottom:.2rem;">Cliente</label>
+                    <select id="cliente_id" name="cliente_id" class="form-select" style="height:2.1rem; padding:.25rem .5rem; font-size:.82rem;">
+                        <option value="">Todos</option>
+                        @foreach($clientes as $cliente)
+                            <option value="{{ $cliente->id }}" @selected(request('cliente_id') == $cliente->id)>
+                                {{ $cliente->nombre_negocio }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div style="flex:1; min-width:120px;">
+                    <label for="forma_pago" class="form-label" style="font-size:.7rem; margin-bottom:.2rem;">Forma de pago</label>
+                    <select id="forma_pago" name="forma_pago" class="form-select" style="height:2.1rem; padding:.25rem .5rem; font-size:.82rem;">
+                        <option value="">Todas</option>
+                        @foreach(\App\Models\PagoCliente::FORMA_PAGO as $forma)
+                            <option value="{{ $forma }}" @selected(request('forma_pago') === $forma)>{{ ucfirst($forma) }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div style="flex:1; min-width:130px;">
+                    <label for="desde" class="form-label" style="font-size:.7rem; margin-bottom:.2rem;">Desde</label>
+                    <input type="date" id="desde" name="desde" class="form-input"
+                           style="height:2.1rem; padding:.25rem .5rem; font-size:.82rem;"
+                           value="{{ request('desde') }}">
+                </div>
+
+                <div style="flex:1; min-width:130px;">
+                    <label for="hasta" class="form-label" style="font-size:.7rem; margin-bottom:.2rem;">Hasta</label>
+                    <input type="date" id="hasta" name="hasta" class="form-input"
+                           style="height:2.1rem; padding:.25rem .5rem; font-size:.82rem;"
+                           value="{{ request('hasta') }}">
+                </div>
+
+                <div style="display:flex; gap:.4rem; align-items:flex-end; padding-bottom:0;">
+                    <button type="submit" class="btn btn-primary" style="height:2.1rem; padding:.25rem 1rem; font-size:.82rem; white-space:nowrap;">
+                        Filtrar
+                    </button>
+                    @if(request()->hasAny(['q','cliente_id','forma_pago','desde','hasta']))
+                        <a href="{{ route('pagos.index') }}" class="btn btn-secondary" style="height:2.1rem; padding:.25rem .75rem; font-size:.82rem; white-space:nowrap;">
+                            Limpiar filtros
+                        </a>
+                    @endif
+                </div>
+
+            </form>
         </div>
-    @else
-        <div class="empty-state">
-            <h3>No hay pagos registrados</h3>
-            <p>Comienza registrando un nuevo pago.</p>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            @if($pagos->count() > 0)
+                <div class="table-container">
+                    <table class="table table-responsive">
+                        <thead>
+                            <tr>
+                                <x-th-sort field="cliente" label="Cliente · Concepto" />
+                                <th>Periodo</th>
+                                <x-th-sort field="monto" label="Monto" />
+                                <x-th-sort field="fecha" label="Fecha pago" class="hide-mobile" />
+                                <th class="hide-mobile">Forma</th>
+                                <th>Documentos</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($pagos as $pago)
+                                <tr>
+                                    <td data-label="Cliente">
+                                        <div class="font-medium">{{ $pago->cliente->nombre_negocio }}</div>
+                                        <div style="font-size:.75rem; color:var(--color-text-secondary); margin-top:.1rem;">{{ $pago->concepto_servicio }}</div>
+                                    </td>
+                                    <td data-label="Periodo" style="font-size:.85rem;">
+                                        @if($pago->periodo_inicio && $pago->periodo_fin)
+                                            {{ $pago->periodo_inicio->format('d/m/Y') }} – {{ $pago->periodo_fin->format('d/m/Y') }}
+                                        @elseif($pago->periodo_facturado)
+                                            {{ $pago->periodo_facturado }}
+                                        @else
+                                            <span class="text-muted">—</span>
+                                        @endif
+                                    </td>
+                                    <td data-label="Monto" style="font-weight:600;">${{ number_format($pago->monto, 2) }}</td>
+                                    <td data-label="Fecha pago" class="hide-mobile">
+                                        {{ $pago->fecha_pago?->format('d/m/Y') ?? '—' }}
+                                    </td>
+                                    <td data-label="Forma" class="hide-mobile">
+                                        {{ $pago->forma_pago ? ucfirst($pago->forma_pago) : '—' }}
+                                    </td>
+                                    <td data-label="Documentos">
+                                        <div style="display:flex; gap:.5rem; flex-wrap:wrap; align-items:center;">
+                                            @if($pago->comprobante_url)
+                                                <a href="{{ $pago->comprobante_url }}" target="_blank" class="btn btn-secondary btn-sm">Comprobante</a>
+                                            @endif
+                                            @if($pago->factura_pdf_url)
+                                                <a href="{{ $pago->factura_pdf_url }}" target="_blank" class="btn btn-secondary btn-sm">PDF</a>
+                                            @endif
+                                            @if($pago->factura_xml_url)
+                                                <a href="{{ $pago->factura_xml_url }}" download class="btn btn-secondary btn-sm">XML</a>
+                                            @endif
+                                            @if(!$pago->comprobante_url && !$pago->factura_pdf_url && !$pago->factura_xml_url)
+                                                <span style="font-size:.75rem; color:var(--color-text-secondary);">—</span>
+                                            @endif
+                                        </div>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+                <div class="pagination-container">
+                    {{ $pagos->links() }}
+                </div>
+            @else
+                <div class="empty-state">
+                    <div class="empty-state-icon">
+                        <svg width="64" height="64" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                        </svg>
+                    </div>
+                    <h3 class="empty-state-title">No hay pagos registrados</h3>
+                    <p class="empty-state-description">Los pagos aparecen aquí automáticamente cuando se valida una renovación.</p>
+                </div>
+            @endif
         </div>
-    @endif
+    </div>
 </div>
 @endsection

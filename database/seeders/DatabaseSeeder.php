@@ -21,9 +21,9 @@ class DatabaseSeeder extends Seeder
             CategoriaGastoSeeder::class,
             GastoOperativoSeeder::class,
             PagoClienteSeeder::class,
-            CalendarioFotoSeeder::class,
-            PaqueteAprobacionSeeder::class,
-            ControlRenovacionSeeder::class,
+            ControlRenovacionSeeder::class,   // debe correr antes que PaqueteAprobacionSeeder
+            PaqueteAprobacionSeeder::class,   // debe correr antes que CalendarioFotoSeeder
+            CalendarioFotoSeeder::class,      // depende de FotoAprobacion ya existentes
             BovedaContrasenaSeeder::class,
         ]);
     }

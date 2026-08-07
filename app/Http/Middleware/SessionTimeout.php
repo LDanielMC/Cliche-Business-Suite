@@ -9,7 +9,12 @@ use Symfony\Component\HttpFoundation\Response;
 
 class SessionTimeout
 {
-    protected int $timeout = 10;
+    protected int $timeout;
+
+    public function __construct()
+    {
+        $this->timeout = (int) env('SESSION_TIMEOUT_MINUTES', 30);
+    }
 
     public function handle(Request $request, Closure $next): Response
     {

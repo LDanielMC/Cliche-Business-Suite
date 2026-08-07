@@ -2,87 +2,85 @@
 
 @section('title', 'Detalle del Cliente')
 
-@section('styles')
-<style>
-    .cliente-container { max-width: 800px; margin: 0 auto; padding: 25px; }
-    .cliente-card { background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-    .cliente-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; border-bottom: 2px solid #667eea; padding-bottom: 15px; }
-    .cliente-header h1 { color: #333; font-size: 24px; margin: 0; }
-    .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-    .info-item { margin-bottom: 15px; }
-    .info-item label { display: block; color: #666; font-size: 13px; text-transform: uppercase; margin-bottom: 5px; }
-    .info-item p { color: #333; font-size: 16px; font-weight: 500; margin: 0; }
-    .btn { padding: 10px 20px; border-radius: 8px; text-decoration: none; font-weight: 500; }
-    .btn-primary { background: #667eea; color: white; }
-    .btn-primary:hover { background: #5a6fd6; }
-    .btn-secondary { background: #6c757d; color: white; }
-    .btn-secondary:hover { background: #5a6268; }
-    .btn-warning { background: #ffc107; color: #333; }
-    .btn-warning:hover { background: #e0a800; }
-    .actions { display: flex; gap: 10px; }
-    @media (max-width: 768px) { .info-grid { grid-template-columns: 1fr; } }
-</style>
+@section('breadcrumbs')
+    <div class="breadcrumbs">
+        <div class="breadcrumb-item">
+            <a href="{{ route('clientes.index') }}" class="breadcrumb-link">Clientes</a>
+            <span class="breadcrumb-separator">/</span>
+        </div>
+        <div class="breadcrumb-item">
+            <span class="breadcrumb-current">{{ $cliente->nombre_negocio }}</span>
+        </div>
+    </div>
 @endsection
 
 @section('content')
-<div class="cliente-container">
-    <div class="cliente-card">
-        <div class="cliente-header">
-            <h1>{{ $cliente->nombre_negocio }}</h1>
-            <div class="actions">
-                <a href="{{ route('clientes.index') }}" class="btn btn-secondary">Volver</a>
-                <a href="{{ route('clientes.edit', $cliente) }}" class="btn btn-warning">Editar</a>
-            </div>
+@php
+    $estatusBadge = [
+        'activo' => 'badge-success',
+        'inactivo' => 'badge-warning',
+        'suspendido' => 'badge-error',
+        'dado_de_baja' => 'badge-error',
+    ][$cliente->user->estatus] ?? 'badge-gray';
+@endphp
+<div class="max-w-4xl mx-auto">
+    <div class="page-header">
+        <div class="page-title-section">
+            <h1 class="page-title">{{ $cliente->nombre_negocio }}</h1>
+            <p class="page-subtitle">{{ $cliente->giro ?? 'Sin giro especificado' }}</p>
         </div>
-
-        <div class="info-grid">
-            <div class="info-item">
-                <label>Giro</label>
-                <p>{{ $cliente->giro ?? 'No especificado' }}</p>
-            </div>
-            <div class="info-item">
-                <label>Nombre de Contacto</label>
-                <p>{{ $cliente->user->name }}</p>
-            </div>
-            <div class="info-item">
-                <label>Correo Electrónico</label>
-                <p>{{ $cliente->user->email }}</p>
-            </div>
-            <div class="info-item">
-                <label>Servicio Contratado</label>
-                <p>{{ $cliente->servicio_contratado ?? 'No especificado' }}</p>
-            </div>
-            <div class="info-item">
-                <label>Cantidad de Fotos</label>
-                <p>{{ $cliente->cantidad_fotos }}</p>
-            </div>
-            <div class="info-item">
-                <label>Precio Mensual</label>
-                <p>${{ number_format($cliente->precio_mensual, 2) }}</p>
-            </div>
-            <div class="info-item">
-                <label>Fecha de Registro</label>
-                <p>{{ $cliente->fecha_registro->format('d/m/Y') }}</p>
-            </div>
-            <div class="info-item">
-                <label>Estado</label>
-                <p>
-                    @if($cliente->user->estatus === 'activo')
-                        <span style="background: #d4edda; color: #155724; padding: 5px 10px; border-radius: 5px; font-size: 12px;">Activo</span>
-                    @elseif($cliente->user->estatus === 'inactivo')
-                        <span style="background: #fff3cd; color: #856404; padding: 5px 10px; border-radius: 5px; font-size: 12px;">Inactivo</span>
-                    @elseif($cliente->user->estatus === 'suspendido')
-                        <span style="background: #f8d7da; color: #721c24; padding: 5px 10px; border-radius: 5px; font-size: 12px;">Suspendido</span>
-                    @elseif($cliente->user->estatus === 'dado_de_baja')
-                        <span style="background: #f8d7da; color: #721c24; padding: 5px 10px; border-radius: 5px; font-size: 12px;">Dado de baja</span>
-                    @endif
-                </p>
-            </div>
+        <div class="page-actions">
+            <a href="{{ route('clientes.index') }}" class="btn btn-secondary">Volver</a>
+            <a href="{{ route('calendario.cliente-view', $cliente) }}" class="btn btn-secondary">Ver calendario</a>
+            <a href="{{ route('clientes.edit', $cliente) }}" class="btn btn-primary">Editar</a>
+            @if($cliente->user->estatus === \App\Models\User::ESTATUS_ACTIVO)
+            <form action="{{ route('clientes.destroy', $cliente) }}" method="POST"
+                  onsubmit="showConfirmModal('Dar de baja', '¿Dar de baja definitiva a {{ addslashes($cliente->nombre_negocio) }}?', () => this.submit(), {danger: true}); return false;">
+                @csrf
+                @method('DELETE')
+                <button type="submit" class="btn btn-danger">Dar de baja</button>
+            </form>
+            @endif
         </div>
+    </div>
 
-        <div class="info-item" style="margin-top: 20px;">
-            <label>Dirección</label>
-            <p>{{ $cliente->direccion ?? 'No especificada' }}</p>
+    <div class="card">
+        <div class="card-body">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <div class="text-xs uppercase text-gray-500 mb-1 tracking-wide">Nombre de Contacto</div>
+                    <div class="text-base font-medium">{{ $cliente->user->name }}</div>
+                </div>
+                <div>
+                    <div class="text-xs uppercase text-gray-500 mb-1 tracking-wide">Correo Electrónico</div>
+                    <div class="text-base font-medium">{{ $cliente->user->email }}</div>
+                </div>
+                <div>
+                    <div class="text-xs uppercase text-gray-500 mb-1 tracking-wide">Servicio Contratado</div>
+                    <div class="text-base font-medium">{{ $cliente->servicio_contratado ?? 'No especificado' }}</div>
+                </div>
+                <div>
+                    <div class="text-xs uppercase text-gray-500 mb-1 tracking-wide">Cantidad de Fotos</div>
+                    <div class="text-base font-medium">{{ $cliente->cantidad_fotos }}</div>
+                </div>
+                <div>
+                    <div class="text-xs uppercase text-gray-500 mb-1 tracking-wide">Precio Mensual</div>
+                    <div class="text-base font-medium">${{ number_format($cliente->precio_mensual, 2) }}</div>
+                </div>
+                <div>
+                    <div class="text-xs uppercase text-gray-500 mb-1 tracking-wide">Fecha de Registro</div>
+                    <div class="text-base font-medium">{{ $cliente->fecha_registro->format('d/m/Y') }}</div>
+                </div>
+                <div>
+                    <div class="text-xs uppercase text-gray-500 mb-1 tracking-wide">Estado</div>
+                    <span class="badge {{ $estatusBadge }}">{{ ucfirst(str_replace('_', ' ', $cliente->user->estatus)) }}</span>
+                </div>
+            </div>
+
+            <div class="mt-6">
+                <div class="text-xs uppercase text-gray-500 mb-1 tracking-wide">Dirección</div>
+                <div class="text-base font-medium">{{ $cliente->direccion ?? 'No especificada' }}</div>
+            </div>
         </div>
     </div>
 </div>

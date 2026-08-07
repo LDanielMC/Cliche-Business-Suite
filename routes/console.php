@@ -9,5 +9,7 @@ Artisan::command('inspire', function () {
 })->purpose('Display an inspiring quote');
 
 Schedule::command('aprobaciones:auto-aprobar')->daily();
+Schedule::command('aprobaciones:recordatorio-pendientes')->daily();
+Schedule::command('reservas:expirar')->daily();
 Schedule::command('renovaciones:verificar')->daily();
 

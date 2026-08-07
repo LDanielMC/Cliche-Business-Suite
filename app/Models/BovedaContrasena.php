@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class BovedaContrasena extends Model
 {
@@ -35,5 +36,10 @@ class BovedaContrasena extends Model
     public function creador(): BelongsTo
     {
         return $this->belongsTo(User::class, 'creado_por');
+    }
+
+    public function accesos(): HasMany
+    {
+        return $this->hasMany(BovedaAcceso::class)->latest('created_at');
     }
 }

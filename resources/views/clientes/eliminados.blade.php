@@ -2,83 +2,83 @@
 
 @section('title', 'Clientes dados de baja')
 
-@section('styles')
-<style>
-    .clientes-container { padding: 25px; }
-    .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
-    .page-header h1 { color: #333; font-size: 28px; }
-    .btn-secondary { background: #6c757d; color: white; padding: 10px 20px; border-radius: 8px; text-decoration: none; font-weight: 500; }
-    .btn-secondary:hover { background: #5a6268; }
-    .btn-success { background: #28a745; color: white; padding: 6px 12px; border-radius: 6px; border: none; cursor: pointer; font-size: 13px; white-space: nowrap; }
-    .btn-success:hover { background: #218838; }
-    .btn-danger { background: #dc3545; color: white; padding: 6px 12px; border-radius: 6px; border: none; cursor: pointer; font-size: 13px; white-space: nowrap; }
-    .btn-danger:hover { background: #c82333; }
-    .table-card { background: white; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); overflow-x: auto; }
-    .table-wrapper { min-width: 850px; }
-    table { width: 100%; border-collapse: collapse; }
-    th, td { padding: 12px; text-align: left; border-bottom: 1px solid #e0e0e0; white-space: nowrap; }
-    th { background: #f8f9fa; color: #666; font-size: 13px; text-transform: uppercase; }
-    .actions { display: flex; gap: 6px; }
-    .badge-eliminado { background: #f8d7da; color: #721c24; padding: 5px 10px; border-radius: 5px; font-size: 12px; font-weight: 500; }
-    .empty-state { text-align: center; padding: 50px; color: #666; }
-    .pagination { margin-top: 20px; }
-</style>
+@section('breadcrumbs')
+    <div class="breadcrumbs">
+        <div class="breadcrumb-item">
+            <a href="{{ route('clientes.index') }}" class="breadcrumb-link">Clientes</a>
+            <span class="breadcrumb-separator">/</span>
+        </div>
+        <div class="breadcrumb-item">
+            <span class="breadcrumb-current">Dados de baja</span>
+        </div>
+    </div>
 @endsection
 
 @section('content')
-<div class="clientes-container">
+<div>
     <div class="page-header">
-        <h1>Clientes dados de baja</h1>
-        <a href="{{ route('clientes.index') }}" class="btn-secondary">Volver a Clientes</a>
+        <div class="page-title-section">
+            <h1 class="page-title">Clientes dados de baja</h1>
+            <p class="page-subtitle">Clientes archivados — al reactivarlos quedarán activos y podrán iniciar un nuevo ciclo de renovación</p>
+        </div>
+        <div class="page-actions">
+            <a href="{{ route('clientes.index') }}" class="btn btn-secondary">Volver a Clientes</a>
+        </div>
     </div>
 
-    @if($clientes->count() > 0)
-        <div class="table-card">
-            <div class="table-wrapper">
-                <table>
-                <thead>
-                    <tr>
-                        <th>Negocio</th>
-                        <th>Contacto</th>
-                        <th>Email</th>
-                        <th>Fecha de baja</th>
-                        <th>Estado</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($clientes as $cliente)
-                        <tr>
-                            <td>{{ $cliente->nombre_negocio }}</td>
-                            <td>{{ $cliente->user->name }}</td>
-                            <td>{{ $cliente->user->email }}</td>
-                            <td>{{ $cliente->user->fecha_baja ? $cliente->user->fecha_baja->format('d/m/Y') : 'N/A' }}</td>
-                            <td><span class="badge-eliminado">Dado de baja</span></td>
-                            <td class="actions">
-                                <form action="{{ route('clientes.restaurar', $cliente->id) }}" method="POST">
-                                    @csrf
-                                    <button type="submit" class="btn-success">Restaurar</button>
-                                </form>
-                                <form action="{{ route('clientes.forceDelete', $cliente->id) }}" method="POST" onsubmit="return confirm('¿Eliminar permanentemente? Esta acción no se puede deshacer.');">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn-danger">Eliminar Permanentemente</button>
-                                </form>
-                            </td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
-            </div>
-        </div>
+    <div class="card">
+        <div class="card-body">
+            <x-table-search placeholder="Buscar por negocio, contacto o email..." />
 
-        <div class="pagination">
-            {{ $clientes->links() }}
+            @if($clientes->count() > 0)
+                <div class="table-container">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <x-th-sort field="cliente" label="Negocio" />
+                                <th>Contacto</th>
+                                <th>Email</th>
+                                <x-th-sort field="fecha_baja" label="Fecha de baja" />
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($clientes as $cliente)
+                                <tr>
+                                    <td class="font-medium">{{ $cliente->nombre_negocio }}</td>
+                                    <td>{{ $cliente->user->name }}</td>
+                                    <td>{{ $cliente->user->email }}</td>
+                                    <td>{{ $cliente->user->fecha_baja ? $cliente->user->fecha_baja->format('d/m/Y') : 'N/A' }}</td>
+                                    <td><span class="badge badge-error">Dado de baja</span></td>
+                                    <td>
+                                        <form action="{{ route('clientes.restaurar', $cliente->id) }}" method="POST"
+                                              onsubmit="showConfirmModal('Reactivar cliente', 'El cliente quedará activo y podrá iniciar un nuevo ciclo de renovación. ¿Continuar?', () => this.submit()); return false;">
+                                            @csrf
+                                            <button type="submit" class="btn btn-success btn-sm">Reactivar</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="pagination-container">
+                    {{ $clientes->links() }}
+                </div>
+            @else
+                <div class="empty-state">
+                    <div class="empty-state-icon">
+                        <svg width="64" height="64" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path>
+                        </svg>
+                    </div>
+                    <h3 class="empty-state-title">No hay clientes dados de baja</h3>
+                    <p class="empty-state-description">Todos los clientes están activos</p>
+                </div>
+            @endif
         </div>
-    @else
-        <div class="empty-state">
-            <h3>No hay clientes dados de baja</h3>
-        </div>
-    @endif
+    </div>
 </div>
 @endsection

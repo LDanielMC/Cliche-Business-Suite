@@ -2,66 +2,81 @@
 
 @section('title', 'Mis Pagos')
 
-@section('styles')
-<style>
-    .clientes-container { padding: 25px; }
-    .page-header { margin-bottom: 25px; }
-    .page-header h1 { color: #333; font-size: 28px; }
-    .table-card { background: white; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); overflow-x: auto; }
-    table { width: 100%; border-collapse: collapse; }
-    th, td { padding: 12px; text-align: left; border-bottom: 1px solid #e0e0e0; }
-    th { background: #f8f9fa; color: #666; font-size: 13px; text-transform: uppercase; }
-    tr:hover { background: #f8f9fa; }
-    .badge { padding: 5px 10px; border-radius: 5px; font-size: 12px; font-weight: 500; text-transform: capitalize; }
-    .badge-pagado { background: #d4edda; color: #155724; }
-    .badge-pendiente { background: #fff3cd; color: #856404; }
-    .badge-vencido { background: #f8d7da; color: #721c24; }
-    .empty-state { text-align: center; padding: 50px; color: #666; }
-    .pagination { margin-top: 20px; }
-</style>
-@endsection
-
 @section('content')
-<div class="clientes-container">
+<div>
     <div class="page-header">
-        <h1>Mis Pagos</h1>
+        <div class="page-title-section">
+            <h1 class="page-title">Mis Pagos</h1>
+            <p class="page-subtitle">Historial de pagos de tu cuenta</p>
+        </div>
     </div>
 
-    @if($pagos->count() > 0)
-        <div class="table-card">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Concepto</th>
-                        <th>Monto</th>
-                        <th>Periodo</th>
-                        <th>Vencimiento</th>
-                        <th>Fecha de Pago</th>
-                        <th>Estatus</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($pagos as $pago)
-                        <tr>
-                            <td>{{ $pago->concepto_servicio }}</td>
-                            <td>${{ number_format($pago->monto, 2) }}</td>
-                            <td>{{ $pago->periodo_facturado }}</td>
-                            <td>{{ $pago->fecha_vencimiento->format('d/m/Y') }}</td>
-                            <td>{{ $pago->fecha_pago?->format('d/m/Y') ?? 'N/A' }}</td>
-                            <td><span class="badge badge-{{ $pago->estatus }}">{{ $pago->estatus }}</span></td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
-        </div>
+    <div class="card">
+        <div class="card-body">
+            @if($pagos->count() > 0)
+                <div class="table-container">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Concepto</th>
+                                <th>Periodo</th>
+                                <th>Monto</th>
+                                <th>Fecha de Pago</th>
+                                <th>Documentos</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($pagos as $pago)
+                                <tr>
+                                    <td class="font-medium">{{ $pago->concepto_servicio }}</td>
+                                    <td style="font-size:.85rem;">
+                                        @if($pago->periodo_inicio && $pago->periodo_fin)
+                                            {{ $pago->periodo_inicio->format('d/m/Y') }} – {{ $pago->periodo_fin->format('d/m/Y') }}
+                                        @elseif($pago->periodo_facturado)
+                                            {{ $pago->periodo_facturado }}
+                                        @else
+                                            —
+                                        @endif
+                                    </td>
+                                    <td>${{ number_format($pago->monto, 2) }}</td>
+                                    <td>{{ $pago->fecha_pago?->format('d/m/Y') ?? '—' }}</td>
+                                    <td>
+                                        <div style="display:flex; gap:.5rem; flex-wrap:wrap;">
+                                            @if($pago->comprobante_url)
+                                                <a href="{{ $pago->comprobante_url }}" target="_blank" class="btn btn-secondary btn-sm">Comprobante</a>
+                                            @endif
+                                            @if($pago->factura_pdf_url)
+                                                <a href="{{ $pago->factura_pdf_url }}" target="_blank" class="btn btn-secondary btn-sm">Factura PDF</a>
+                                            @endif
+                                            @if($pago->factura_xml_url)
+                                                <a href="{{ $pago->factura_xml_url }}" download class="btn btn-secondary btn-sm">XML</a>
+                                            @endif
+                                            @if(!$pago->comprobante_url && !$pago->factura_pdf_url && !$pago->factura_xml_url)
+                                                <span style="color:var(--color-text-secondary);">—</span>
+                                            @endif
+                                        </div>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
 
-        <div class="pagination">
-            {{ $pagos->links() }}
+                <div class="pagination-container">
+                    {{ $pagos->links() }}
+                </div>
+            @else
+                <div class="empty-state">
+                    <div class="empty-state-icon">
+                        <svg width="64" height="64" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                        </svg>
+                    </div>
+                    <h3 class="empty-state-title">Aún no tienes pagos registrados</h3>
+                    <p class="empty-state-description">Los pagos de tu cuenta aparecerán aquí una vez que se valide tu comprobante.</p>
+                </div>
+            @endif
         </div>
-    @else
-        <div class="empty-state">
-            <h3>Aún no tienes pagos registrados</h3>
-        </div>
-    @endif
+    </div>
 </div>
 @endsection

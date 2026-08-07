@@ -1,0 +1,8 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/forms";
+@plugin "@tailwindcss/typography";
+
+/* Explicit content sources so Tailwind generates every utility used in Blade/JS */
+@source "../views/**/*.blade.php";
+@source "../js/**/*.js";
+@source "../../storage/framework/views/*.php";

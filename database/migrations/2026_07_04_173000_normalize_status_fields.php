@@ -16,7 +16,15 @@ return new class extends Migration
             $table->dropColumn(['estatus', 'fecha_baja']);
         });
 
-        DB::statement("ALTER TABLE users MODIFY COLUMN estatus ENUM('activo', 'inactivo', 'suspendido', 'dado_de_baja') NOT NULL DEFAULT 'activo'");
+        if (DB::getDriverName() === 'mysql') {
+            DB::statement("ALTER TABLE users MODIFY COLUMN estatus ENUM('activo', 'inactivo', 'suspendido', 'dado_de_baja') NOT NULL DEFAULT 'activo'");
+        } else {
+            // SQLite: ENUM('activo','inactivo','suspendido') was created with a CHECK constraint
+            // that blocks 'dado_de_baja'. Convert to plain string to remove the constraint.
+            Schema::table('users', function (Blueprint $table) {
+                $table->string('estatus')->default('activo')->change();
+            });
+        }
     }
 
     /**
@@ -29,6 +37,8 @@ return new class extends Migration
             $table->date('fecha_baja')->nullable()->after('estatus');
         });
 
-        DB::statement("ALTER TABLE users MODIFY COLUMN estatus ENUM('activo', 'inactivo', 'suspendido') NOT NULL DEFAULT 'activo'");
+        if (DB::getDriverName() === 'mysql') {
+            DB::statement("ALTER TABLE users MODIFY COLUMN estatus ENUM('activo', 'inactivo', 'suspendido') NOT NULL DEFAULT 'activo'");
+        }
     }
 };

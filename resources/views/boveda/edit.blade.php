@@ -2,36 +2,207 @@
 
 @section('title', 'Editar Credencial')
 
-@section('styles')
-<style>
-    .form-container { max-width: 800px; margin: 0 auto; padding: 25px; }
-    .form-card { background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-    .form-card h1 { color: #333; margin-bottom: 25px; font-size: 24px; }
-    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-    .form-group { margin-bottom: 20px; }
-    .form-group label { display: block; margin-bottom: 8px; color: #555; font-weight: 500; }
-    .form-control { width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 15px; }
-    .form-control:focus { outline: none; border-color: #667eea; }
-    .form-control.error { border-color: #dc3545; }
-    .error-message { color: #dc3545; font-size: 13px; margin-top: 5px; }
-    .form-actions { display: flex; justify-content: flex-end; gap: 15px; margin-top: 30px; }
-    .btn { padding: 12px 25px; border-radius: 8px; text-decoration: none; font-weight: 500; border: none; cursor: pointer; font-size: 15px; }
-    .btn-primary { background: #667eea; color: white; }
-    .btn-primary:hover { background: #5a6fd6; }
-    .btn-secondary { background: #6c757d; color: white; }
-    .btn-secondary:hover { background: #5a6268; }
-    @media (max-width: 768px) { .form-row { grid-template-columns: 1fr; } }
-</style>
+@section('breadcrumbs')
+    <div class="breadcrumbs">
+        <div class="breadcrumb-item">
+            <a href="{{ route('boveda.index') }}" class="breadcrumb-link">Bóveda</a>
+            <span class="breadcrumb-separator">/</span>
+        </div>
+        <div class="breadcrumb-item">
+            <span class="breadcrumb-current">Editar Credencial</span>
+        </div>
+    </div>
 @endsection
 
 @section('content')
-<div class="form-container">
-    <div class="form-card">
-        <h1>Editar Credencial</h1>
+<div class="max-w-4xl mx-auto">
+    <div class="page-header">
+        <div class="page-title-section">
+            <h1 class="page-title">Editar Credencial</h1>
+            <p class="page-subtitle">{{ $credencial->nombre_plataforma }}</p>
+        </div>
+    </div>
 
-        <form method="POST" action="{{ route('boveda.update', $credencial) }}">
-            @include('boveda._form', ['edit' => true, 'credencial' => $credencial, 'clientes' => $clientes])
-        </form>
+    @if(session('success'))
+        <div class="alert alert-success mb-4">{{ session('success') }}</div>
+    @endif
+    @if(session('error'))
+        <div class="alert alert-error mb-4">{{ session('error') }}</div>
+    @endif
+
+    <div class="card mb-6" x-data="revelarPassword({{ $credencial->id }})">
+        <div class="card-header">
+            <h3 class="card-title" style="margin:0;">Contraseña actual</h3>
+        </div>
+        <div class="card-body">
+            <div class="flex gap-2" style="max-width:28rem;" x-show="!pidiendoVerificacion">
+                <input type="text" class="form-input" readonly
+                       :value="visible ? password : '••••••••••••'"
+                       style="font-family: monospace;">
+                <button type="button" class="btn btn-secondary" @click="revelar()" x-show="!visible" :disabled="cargando">
+                    <span x-show="!cargando">Mostrar</span>
+                    <span x-show="cargando">...</span>
+                </button>
+                <button type="button" class="btn btn-secondary" @click="ocultar()" x-show="visible">Ocultar</button>
+                <button type="button" class="btn btn-secondary" @click="copiar()" x-show="visible" x-text="copiado ? 'Copiado' : 'Copiar'"></button>
+            </div>
+
+            <div x-show="pidiendoVerificacion" x-cloak style="max-width:28rem;">
+                <template x-if="enviandoCodigo">
+                    <p style="font-size:.85rem; color:var(--color-text-secondary);">Enviando código a tu correo...</p>
+                </template>
+                <template x-if="!enviandoCodigo">
+                    <div>
+                        <label class="form-label" for="verificar_codigo">Te enviamos un código de 6 dígitos a tu correo</label>
+                        <div class="flex gap-2">
+                            <input type="text" id="verificar_codigo" class="form-input" x-model="codigoVerificacion"
+                                   @keydown.enter="confirmarCodigo()" placeholder="000000" maxlength="6" inputmode="numeric"
+                                   style="font-family: monospace; letter-spacing: 2px;" autocomplete="one-time-code">
+                            <button type="button" class="btn btn-primary" @click="confirmarCodigo()" :disabled="cargando">
+                                <span x-show="!cargando">Confirmar</span>
+                                <span x-show="cargando">...</span>
+                            </button>
+                            <button type="button" class="btn btn-secondary" @click="cancelarVerificacion()">Cancelar</button>
+                        </div>
+                        <p style="font-size:.75rem; color:var(--color-text-secondary); margin-top:.4rem;">
+                            Expira en 10 minutos. ¿No te llegó? <a href="#" @click.prevent="enviarCodigo()">Reenviar código</a>.
+                        </p>
+                        <p style="font-size:.75rem; color:var(--color-error); margin-top:.3rem;" x-show="errorVerificacion" x-text="errorVerificacion"></p>
+                    </div>
+                </template>
+            </div>
+
+            <p style="font-size:.75rem; color:var(--color-text-secondary); margin-top:.5rem;" x-show="visible" x-cloak>
+                Se oculta sola en <span x-text="segundosRestantes"></span>s.
+            </p>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <form method="POST" action="{{ route('boveda.update', $credencial) }}">
+                @include('boveda._form', ['edit' => true, 'credencial' => $credencial, 'clientes' => $clientes])
+            </form>
+        </div>
     </div>
 </div>
+
+<script>
+function revelarPassword(credencialId) {
+    return {
+        visible: false,
+        cargando: false,
+        copiado: false,
+        password: '',
+        segundosRestantes: 20,
+        pidiendoVerificacion: false,
+        enviandoCodigo: false,
+        codigoVerificacion: '',
+        errorVerificacion: '',
+        _timer: null,
+        _cuenta: null,
+        _csrf() {
+            return document.querySelector('meta[name="csrf-token"]').content;
+        },
+        revelar() {
+            this.cargando = true;
+
+            fetch(`/admin/boveda/${credencialId}/revelar`, {
+                method: 'POST',
+                headers: { 'X-CSRF-TOKEN': this._csrf(), 'Accept': 'application/json' },
+            })
+                .then(async (r) => {
+                    if (r.status === 428) {
+                        this.cargando = false;
+                        this.enviarCodigo();
+                        return null;
+                    }
+                    if (!r.ok) throw new Error('No se pudo revelar la contraseña.');
+                    return r.json();
+                })
+                .then(data => {
+                    if (!data) return;
+                    this.password = data.password;
+                    this.visible = true;
+                    this.segundosRestantes = 20;
+                    clearTimeout(this._timer);
+                    clearInterval(this._cuenta);
+                    this._cuenta = setInterval(() => { this.segundosRestantes--; }, 1000);
+                    this._timer = setTimeout(() => this.ocultar(), 20000);
+                    this.cargando = false;
+                })
+                .catch(() => {
+                    window.uxSystem?.showToast('No se pudo revelar la contraseña.', 'error');
+                    this.cargando = false;
+                });
+        },
+        enviarCodigo() {
+            this.pidiendoVerificacion = true;
+            this.enviandoCodigo = true;
+            this.errorVerificacion = '';
+            this.codigoVerificacion = '';
+
+            fetch('{{ route('boveda.verificar.enviar-codigo') }}', {
+                method: 'POST',
+                headers: { 'X-CSRF-TOKEN': this._csrf(), 'Accept': 'application/json' },
+            })
+                .then(r => { if (!r.ok) throw new Error('No se pudo enviar el código.'); })
+                .then(() => { window.uxSystem?.showToast('Código enviado a tu correo.', 'success'); })
+                .catch(() => window.uxSystem?.showToast('No se pudo enviar el código.', 'error'))
+                .finally(() => { this.enviandoCodigo = false; });
+        },
+        confirmarCodigo() {
+            if (!this.codigoVerificacion) return;
+
+            this.cargando = true;
+            this.errorVerificacion = '';
+
+            fetch('{{ route('boveda.verificar.confirmar-codigo') }}', {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': this._csrf(),
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ codigo: this.codigoVerificacion }),
+            })
+                .then(async (r) => {
+                    if (r.status === 422) {
+                        const data = await r.json();
+                        this.errorVerificacion = data.error || 'Código inválido.';
+                        this.cargando = false;
+                        return;
+                    }
+                    if (!r.ok) throw new Error('No se pudo confirmar el código.');
+
+                    this.pidiendoVerificacion = false;
+                    this.codigoVerificacion = '';
+                    this.revelar();
+                })
+                .catch(() => {
+                    window.uxSystem?.showToast('No se pudo confirmar el código.', 'error');
+                    this.cargando = false;
+                });
+        },
+        cancelarVerificacion() {
+            this.pidiendoVerificacion = false;
+            this.codigoVerificacion = '';
+            this.errorVerificacion = '';
+        },
+        ocultar() {
+            this.visible = false;
+            this.copiado = false;
+            this.password = '';
+            clearTimeout(this._timer);
+            clearInterval(this._cuenta);
+        },
+        copiar() {
+            navigator.clipboard.writeText(this.password).then(() => {
+                this.copiado = true;
+                setTimeout(() => { this.copiado = false; }, 2000);
+            });
+        },
+    };
+}
+</script>
 @endsection

@@ -1,0 +1,41 @@
+/* Import Design System */
+@import './design-system.css';
+
+/* Tailwind CSS source directives - these are Tailwind-specific and may show lint warnings */
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php'; /* tailwindcss-source */
+@source '../../storage/framework/views/*.php'; /* tailwindcss-source */
+@source '../**/*.blade.php'; /* tailwindcss-source */
+@source '../**/*.js'; /* tailwindcss-source */
+
+/* Application-specific overrides */
+body {
+    min-height: 100vh;
+}
+
+/* Custom animations */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideIn {
+    from { opacity: 0; transform: translateX(-20px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+.animate-fade-in {
+    animation: fadeIn 0.3s ease-out;
+}
+
+.animate-slide-in {
+    animation: slideIn 0.3s ease-out;
+}
+
+.animate-pulse {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}

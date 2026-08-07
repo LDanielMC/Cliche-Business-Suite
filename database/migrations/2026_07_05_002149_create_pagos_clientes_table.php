@@ -17,11 +17,11 @@ return new class extends Migration
             $table->string('concepto_servicio', 200);
             $table->decimal('monto', 10, 2);
             $table->date('fecha_pago')->nullable();
-            $table->string('periodo_facturado', 50);
+            $table->string('periodo_facturado', 100)->nullable();
             $table->enum('forma_pago', ['efectivo', 'transferencia', 'tarjeta', 'otro'])->nullable();
             $table->enum('estatus', ['pagado', 'pendiente', 'vencido'])->default('pendiente');
-            $table->date('fecha_vencimiento');
-            $table->foreignId('registrado_por')->constrained('users')->cascadeOnDelete();
+            $table->date('fecha_vencimiento')->nullable();
+            $table->foreignId('registrado_por')->nullable()->constrained('users')->nullOnDelete();
             $table->timestamps();
         });
     }

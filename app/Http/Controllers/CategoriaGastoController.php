@@ -3,14 +3,28 @@
 namespace App\Http\Controllers;
 
 use App\Models\CategoriaGasto;
+use App\Support\Ordenable;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
 class CategoriaGastoController extends Controller
 {
-    public function index()
+    use Ordenable;
+
+    public function index(Request $request)
     {
-        $categorias = CategoriaGasto::withCount('gastos')->orderBy('nombre_categoria')->paginate(10);
+        $query = CategoriaGasto::withCount('gastos');
+
+        if ($request->filled('q')) {
+            $query->where('nombre', 'like', '%' . $request->input('q') . '%');
+        }
+
+        $this->aplicarOrden($query, [
+            'nombre' => 'nombre',
+            'gastos' => 'gastos_count',
+        ], 'nombre', 'asc');
+
+        $categorias = $query->paginate(10)->withQueryString();
 
         return view('categorias-gastos.index', compact('categorias'));
     }
@@ -23,7 +37,7 @@ class CategoriaGastoController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'nombre_categoria' => ['required', 'string', 'max:100', 'unique:categorias_gastos,nombre_categoria'],
+            'nombre' => ['required', 'string', 'max:100', 'unique:categorias_gastos,nombre'],
         ]);
 
         CategoriaGasto::create($validated);
@@ -34,13 +48,15 @@ class CategoriaGastoController extends Controller
 
     public function edit(CategoriaGasto $categoria)
     {
+        $categoria->loadCount('gastos');
+
         return view('categorias-gastos.edit', compact('categoria'));
     }
 
     public function update(Request $request, CategoriaGasto $categoria)
     {
         $validated = $request->validate([
-            'nombre_categoria' => ['required', 'string', 'max:100', Rule::unique('categorias_gastos', 'nombre_categoria')->ignore($categoria->id)],
+            'nombre' => ['required', 'string', 'max:100', Rule::unique('categorias_gastos', 'nombre')->ignore($categoria->id)],
         ]);
 
         $categoria->update($validated);

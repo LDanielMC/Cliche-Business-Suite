@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Cliente extends Model
 {
@@ -20,6 +21,12 @@ class Cliente extends Model
         'cantidad_fotos',
         'precio_mensual',
         'fecha_registro',
+        // Fiscal data for invoicing
+        'rfc',
+        'razon_social',
+        'codigo_postal_fiscal',
+        'regimen_fiscal',
+        'uso_cfdi',
     ];
 
     protected function casts(): array
@@ -40,6 +47,21 @@ class Cliente extends Model
         return $this->hasMany(ControlRenovacion::class);
     }
 
+    public function estatusLogs(): HasMany
+    {
+        return $this->hasMany(ClienteEstatusLog::class)->orderBy('fecha_evento');
+    }
+
+    public function historialRenovaciones(): HasMany
+    {
+        return $this->hasMany(HistorialRenovacion::class)->orderByDesc('created_at');
+    }
+
+    public function renovacionActiva(): HasOne
+    {
+        return $this->hasOne(ControlRenovacion::class)->latestOfMany();
+    }
+
     public function scopeActivos($query)
     {
         return $query->whereHas('user', fn ($q) => $q->where('estatus', User::ESTATUS_ACTIVO));
@@ -53,5 +75,10 @@ class Cliente extends Model
     public function scopeDadosDeBaja($query)
     {
         return $query->whereHas('user', fn ($q) => $q->where('estatus', User::ESTATUS_DADO_DE_BAJA));
+    }
+
+    public function scopeSuspendidos($query)
+    {
+        return $query->whereHas('user', fn ($q) => $q->where('estatus', User::ESTATUS_SUSPENDIDO));
     }
 }

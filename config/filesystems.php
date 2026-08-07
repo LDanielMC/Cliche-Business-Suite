@@ -47,6 +47,15 @@ return [
             'report' => false,
         ],
 
+        'gcs' => [
+            'driver'          => 'gcs',
+            'key_file'        => storage_path('app/sapient-helix-428301-d6-14f285c49312.json'),
+            'bucket'          => env('GCS_BUCKET', 'cliche-fotos-prod'),
+            'path_prefix'     => env('GCS_PATH_PREFIX', ''),
+            'storage_api_uri' => env('GCS_URL', 'https://storage.googleapis.com/cliche-fotos-prod'),
+            'visibility'      => 'public',
+        ],
+
         's3' => [
             'driver' => 's3',
             'key' => env('AWS_ACCESS_KEY_ID'),

@@ -1,8 +1,29 @@
-@extends('layouts.app')
+<!DOCTYPE html>
+<html lang="es" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>Iniciar Sesión · Cliche Business Suite</title>
+    
+    <!-- Preconnect to fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    
+    <!-- Vite Assets -->
+    @vite([
+        'resources/css/modern-design-system.css',
+        'resources/css/modern-navigation.css',
+        'resources/css/modern-components.css',
+        'resources/js/app.js',
+        'resources/js/modern-ux-system.js'
+    ])
+    
+    <!-- Skip to main content for accessibility -->
+    <a href="#main-content" class="skip-link">Saltar al contenido principal</a>
+</head>
+<body class="h-full bg-background text-text-primary">
 
-@section('title', 'Iniciar Sesión · Cliche Business Suite')
-
-@section('styles')
 <style>
     .login-page {
         position: fixed;
@@ -648,9 +669,6 @@
         }
     }
 </style>
-@endsection
-
-@section('content')
 <div class="login-page" id="loginPage">
     <div class="login-mesh" id="loginMesh">
         <div class="mesh-blob" data-speed="0.02"></div>
@@ -903,4 +921,5 @@
         }
     });
 </script>
-@endsection
+</body>
+</html>

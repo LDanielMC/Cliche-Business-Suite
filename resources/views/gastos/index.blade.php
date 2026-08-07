@@ -2,119 +2,145 @@
 
 @section('title', 'Gastos Operativos')
 
-@section('styles')
-<style>
-    .clientes-container { padding: 25px; }
-    .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; flex-wrap: wrap; gap: 15px; }
-    .page-header h1 { color: #333; font-size: 28px; }
-    .btn-primary { background: #667eea; color: white; padding: 10px 20px; border-radius: 8px; text-decoration: none; font-weight: 500; }
-    .btn-primary:hover { background: #5a6fd6; }
-    .btn-warning { background: #ffc107; color: #333; padding: 6px 12px; border-radius: 6px; text-decoration: none; font-size: 13px; white-space: nowrap; }
-    .btn-warning:hover { background: #e0a800; }
-    .btn-danger { background: #dc3545; color: white; padding: 6px 12px; border-radius: 6px; border: none; cursor: pointer; font-size: 13px; white-space: nowrap; }
-    .btn-danger:hover { background: #c82333; }
-    .filters { background: white; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); padding: 20px; margin-bottom: 20px; display: flex; gap: 15px; flex-wrap: wrap; align-items: end; }
-    .filters .form-group { margin-bottom: 0; }
-    .filters label { display: block; margin-bottom: 6px; color: #555; font-size: 13px; font-weight: 500; }
-    .filters select, .filters input { padding: 8px 12px; border: 2px solid #e0e0e0; border-radius: 6px; }
-    .filters .btn-primary { padding: 9px 18px; }
-    .table-card { background: white; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); overflow-x: auto; }
-    table { width: 100%; border-collapse: collapse; }
-    th, td { padding: 12px; text-align: left; border-bottom: 1px solid #e0e0e0; white-space: nowrap; }
-    th { background: #f8f9fa; color: #666; font-size: 13px; text-transform: uppercase; }
-    tr:hover { background: #f8f9fa; }
-    .actions { display: flex; gap: 6px; }
-    .empty-state { text-align: center; padding: 50px; color: #666; }
-    .pagination { margin-top: 20px; }
-</style>
+@section('breadcrumbs')
+    <div class="breadcrumbs">
+        <div class="breadcrumb-item">
+            <a href="{{ route('admin.dashboard') }}" class="breadcrumb-link">Dashboard</a>
+            <span class="breadcrumb-separator">/</span>
+        </div>
+        <div class="breadcrumb-item">
+            <span class="breadcrumb-current">Gastos Operativos</span>
+        </div>
+    </div>
 @endsection
 
 @section('content')
-<div class="clientes-container">
+<div>
     <div class="page-header">
-        <h1>Gastos Operativos</h1>
-        <div>
-            <a href="{{ route('categorias-gastos.index') }}" class="btn-primary" style="background:#6c757d; margin-right:10px;">Categorías</a>
-            <a href="{{ route('gastos.create') }}" class="btn-primary">+ Nuevo Gasto</a>
+        <div class="page-title-section">
+            <h1 class="page-title">Gastos Operativos</h1>
+            <p class="page-subtitle">Registra y controla los gastos del negocio</p>
+        </div>
+        <div class="page-actions">
+            @if(auth()->user()->isAdmin())
+                <a href="{{ route('categorias-gastos.index') }}" class="btn btn-secondary">Categorías</a>
+            @endif
+            <a href="{{ route('gastos.create') }}" class="btn btn-primary">
+                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                </svg>
+                Nuevo Gasto
+            </a>
         </div>
     </div>
 
-    <form method="GET" action="{{ route('gastos.index') }}" class="filters">
-        <div class="form-group">
-            <label for="categoria_gasto_id">Categoría</label>
-            <select id="categoria_gasto_id" name="categoria_gasto_id">
-                <option value="">Todas</option>
-                @foreach($categorias as $categoria)
-                    <option value="{{ $categoria->id }}" @selected(request('categoria_gasto_id') == $categoria->id)>{{ $categoria->nombre_categoria }}</option>
-                @endforeach
-            </select>
+    <div class="card mb-6">
+        <div class="card-body">
+            <form method="GET" action="{{ route('gastos.index') }}" class="flex flex-wrap items-end gap-4">
+                @if(request('sort'))
+                    <input type="hidden" name="sort" value="{{ request('sort') }}">
+                    <input type="hidden" name="dir" value="{{ request('dir') }}">
+                @endif
+                <div class="form-group mb-0">
+                    <label for="q" class="form-label">Buscar</label>
+                    <input type="text" id="q" name="q" data-live-search class="form-input" placeholder="Concepto, categoría, cliente..." value="{{ request('q') }}">
+                </div>
+                <div class="form-group mb-0">
+                    <label for="categoria_gasto_id" class="form-label">Categoría</label>
+                    <select id="categoria_gasto_id" name="categoria_gasto_id" class="form-select">
+                        <option value="">Todas</option>
+                        @foreach($categorias as $categoria)
+                            <option value="{{ $categoria->id }}" @selected(request('categoria_gasto_id') == $categoria->id)>{{ $categoria->nombre }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                @if(auth()->user()->isAdmin())
+                    <div class="form-group mb-0">
+                        <label for="registrado_por" class="form-label">Operador</label>
+                        <select id="registrado_por" name="registrado_por" class="form-select">
+                            <option value="">Todos</option>
+                            @foreach($registradores as $registrador)
+                                <option value="{{ $registrador->id }}" @selected(request('registrado_por') == $registrador->id)>{{ $registrador->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                @endif
+                <div class="form-group mb-0">
+                    <label for="desde" class="form-label">Desde</label>
+                    <input type="date" id="desde" name="desde" class="form-input" value="{{ request('desde') }}">
+                </div>
+                <div class="form-group mb-0">
+                    <label for="hasta" class="form-label">Hasta</label>
+                    <input type="date" id="hasta" name="hasta" class="form-input" value="{{ request('hasta') }}">
+                </div>
+                <button type="submit" class="btn btn-primary">Filtrar</button>
+                @if(request()->hasAny(['q', 'categoria_gasto_id', 'registrado_por', 'desde', 'hasta']))
+                    <a href="{{ route('gastos.index') }}" class="btn btn-secondary">Limpiar filtros</a>
+                @endif
+            </form>
         </div>
-        <div class="form-group">
-            <label for="desde">Desde</label>
-            <input type="date" id="desde" name="desde" value="{{ request('desde') }}">
-        </div>
-        <div class="form-group">
-            <label for="hasta">Hasta</label>
-            <input type="date" id="hasta" name="hasta" value="{{ request('hasta') }}">
-        </div>
-        <div class="form-group">
-            <button type="submit" class="btn-primary">Filtrar</button>
-        </div>
-    </form>
+    </div>
 
-    @if($gastos->count() > 0)
-        <div class="table-card">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Concepto</th>
-                        <th>Categoría</th>
-                        <th>Cliente</th>
-                        <th>Monto</th>
-                        <th>Fecha</th>
-                        <th>Forma de Pago</th>
-                        <th>Comprobante</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($gastos as $gasto)
-                        <tr>
-                            <td>{{ $gasto->concepto_gasto }}</td>
-                            <td>{{ $gasto->categoria->nombre_categoria }}</td>
-                            <td>{{ $gasto->cliente->nombre_negocio ?? 'General' }}</td>
-                            <td>${{ number_format($gasto->monto, 2) }}</td>
-                            <td>{{ $gasto->fecha_gasto->format('d/m/Y') }}</td>
-                            <td>{{ ucfirst($gasto->forma_pago) }}</td>
-                            <td>
-                                @if($gasto->comprobante)
-                                    <a href="{{ $gasto->comprobante_url }}" target="_blank">Ver</a>
-                                @else
-                                    N/A
+    <div class="card">
+        <div class="card-body">
+            @if($gastos->count() > 0)
+                <p style="font-size:.75rem; color:var(--color-text-secondary); margin-bottom:.75rem;">
+                    Selecciona un registro para editarlo o eliminarlo.
+                </p>
+                <div class="table-container">
+                    <table class="table table-responsive">
+                        <thead>
+                            <tr>
+                                <x-th-sort field="concepto" label="Concepto · Categoría" />
+                                <th class="hide-mobile">Cliente</th>
+                                <x-th-sort field="monto" label="Monto" />
+                                <x-th-sort field="fecha" label="Fecha" class="hide-mobile" />
+                                @if(auth()->user()->isAdmin())
+                                    <x-th-sort field="registrado" label="Registrado por" class="hide-mobile" />
                                 @endif
-                            </td>
-                            <td class="actions">
-                                <a href="{{ route('gastos.edit', $gasto) }}" class="btn-warning">Editar</a>
-                                <form action="{{ route('gastos.destroy', $gasto) }}" method="POST" onsubmit="return confirm('¿Eliminar este gasto?');">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn-danger">Eliminar</button>
-                                </form>
-                            </td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
+                                <th style="width:2rem;"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($gastos as $gasto)
+                                <tr class="tr-link" onclick="window.location='{{ route('gastos.edit', $gasto) }}'">
+                                    <td data-label="Concepto">
+                                        <div class="font-medium">{{ $gasto->concepto_gasto }}</div>
+                                        <div style="margin-top:.2rem;">
+                                            <span class="badge badge-primary" style="font-size:.7rem;">{{ $gasto->categoria->nombre }}</span>
+                                        </div>
+                                    </td>
+                                    <td data-label="Cliente" class="hide-mobile" style="font-size:.85rem;">{{ $gasto->cliente->nombre_negocio ?? 'General' }}</td>
+                                    <td data-label="Monto" style="font-weight:600; color:var(--color-error);">${{ number_format($gasto->monto, 2) }}</td>
+                                    <td data-label="Fecha" class="hide-mobile">{{ $gasto->fecha_gasto->format('d/m/Y') }}</td>
+                                    @if(auth()->user()->isAdmin())
+                                        <td data-label="Registrado por" class="hide-mobile" style="font-size:.85rem;">{{ $gasto->registradoPor->name ?? '—' }}</td>
+                                    @endif
+                                    <td>
+                                        <svg class="tr-chevron" width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="display:block; margin-left:auto;">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                                        </svg>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+                <div class="pagination-container">
+                    {{ $gastos->links() }}
+                </div>
+            @else
+                <div class="empty-state">
+                    <div class="empty-state-icon">
+                        <svg width="64" height="64" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="empty-state-title">No hay gastos registrados</h3>
+                    <p class="empty-state-description">Comienza registrando un nuevo gasto.</p>
+                </div>
+            @endif
         </div>
-
-        <div class="pagination">
-            {{ $gastos->links() }}
-        </div>
-    @else
-        <div class="empty-state">
-            <h3>No hay gastos registrados</h3>
-            <p>Comienza registrando un nuevo gasto.</p>
-        </div>
-    @endif
+    </div>
 </div>
 @endsection

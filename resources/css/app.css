@@ -1,90 +1,46 @@
-@import 'tailwindcss';
-@import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Raleway:wght@300;400;500;600;700&family=Tenor+Sans&display=swap');
+/* Import Design System */
+@import './design-system.css';
+@import './layout-styles.css';
 
-@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
-@source '../../storage/framework/views/*.php';
-@source '../**/*.blade.php';
-@source '../**/*.js';
+/* Tailwind CSS source directives - these are Tailwind-specific and may show lint warnings */
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php'; /* tailwindcss-source */
+@source '../../storage/framework/views/*.php'; /* tailwindcss-source */
+@source '../**/*.blade.php'; /* tailwindcss-source */
+@source '../**/*.js'; /* tailwindcss-source */
 
-@theme {
-    --font-sans: 'Raleway', ui-sans-serif, system-ui, sans-serif;
-    --font-display: 'Cinzel Decorative', 'Cinzel', serif;
-    --font-heading: 'Tenor Sans', 'Cinzel Decorative', serif;
-
-    --color-bg: #faf9ff;
-    --color-fg: #2d2d35;
-    --color-primary: #7c3aed;
-    --color-secondary: #f0fdfa;
-    --color-accent: #14b8a6;
-    --color-card: #ffffff;
-    --color-border: #e5e2f0;
-    --color-muted: #f5f3ff;
-}
-
-:root {
-    --bg: #faf9ff;
-    --fg: #2d2d35;
-    --primary: #7c3aed;
-    --secondary: #f0fdfa;
-    --accent: #14b8a6;
-    --card: #ffffff;
-    --border: #e5e2f0;
-    --muted: #f5f3ff;
-}
-
-html {
-    scroll-behavior: smooth;
-}
-
+/* Application-specific overrides */
 body {
-    font-family: 'Raleway', sans-serif;
-    background-color: var(--bg);
-    color: var(--fg);
     min-height: 100vh;
-    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-h1, h2 {
-    font-family: 'Cinzel Decorative', 'Cinzel', serif;
-    font-weight: 700;
-    letter-spacing: 0.02em;
+/* Custom animations */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
-h3, h4 {
-    font-family: 'Tenor Sans', 'Cinzel Decorative', serif;
-    font-weight: 400;
-    letter-spacing: 0.01em;
+@keyframes slideIn {
+    from { opacity: 0; transform: translateX(-20px); }
+    to { opacity: 1; transform: translateX(0); }
 }
 
-.text-gradient {
-    background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
 }
 
-.border-gradient {
-    position: relative;
-    background: var(--card);
+.animate-fade-in {
+    animation: fadeIn 0.3s ease-out;
 }
 
-.border-gradient::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    padding: 1px;
-    border-radius: inherit;
-    background: linear-gradient(135deg, var(--primary), var(--accent));
-    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    -webkit-mask-composite: xor;
-    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    mask-composite: exclude;
-    pointer-events: none;
+.animate-slide-in {
+    animation: slideIn 0.3s ease-out;
 }
 
-.glow-primary {
-    box-shadow: 0 0 40px rgba(124, 58, 237, 0.25);
+.animate-pulse {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
+
 
 .glow-accent {
     box-shadow: 0 0 40px rgba(20, 184, 166, 0.35);

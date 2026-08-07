@@ -1,0 +1,318 @@
+/* ========================================
+   LAYOUT STYLES FOR NEW APP LAYOUT
+   ======================================== */
+
+/* Main Layout Structure */
+.main-content {
+  margin-left: 0;
+  min-height: 100vh;
+  transition: margin-left var(--transition-base);
+}
+
+@media (min-width: 1024px) {
+  .main-content {
+    margin-left: 280px;
+  }
+  
+  .sidebar.open {
+    transform: translateX(0);
+  }
+}
+
+/* Sidebar Navigation Styles */
+.nav-section {
+  margin-bottom: var(--space-6);
+}
+
+.nav-section-title {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--color-gray-500);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: var(--space-3);
+  padding: 0 var(--space-4);
+}
+
+/* User Menu Styles */
+.user-menu {
+  position: relative;
+}
+
+.user-menu-button {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-2);
+  background: none;
+  border: 1px solid var(--color-gray-200);
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.user-menu-button:hover {
+  background-color: var(--color-gray-50);
+  border-color: var(--color-gray-300);
+}
+
+.user-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-full);
+  background: linear-gradient(135deg, var(--color-primary-500), var(--color-accent-500));
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 0.875rem;
+}
+
+.user-avatar.large {
+  width: 48px;
+  height: 48px;
+  font-size: 1.125rem;
+}
+
+.user-info {
+  text-align: left;
+}
+
+.user-name {
+  font-weight: 500;
+  color: var(--color-gray-900);
+  font-size: 0.875rem;
+}
+
+.user-role {
+  font-size: 0.75rem;
+  color: var(--color-gray-500);
+  text-transform: capitalize;
+}
+
+.user-email {
+  font-size: 0.75rem;
+  color: var(--color-gray-500);
+}
+
+.dropdown-arrow {
+  color: var(--color-gray-400);
+  transition: transform var(--transition-fast);
+}
+
+.user-menu-button[aria-expanded="true"] .dropdown-arrow {
+  transform: rotate(180deg);
+}
+
+.user-dropdown {
+  position: absolute;
+  top: calc(100% + var(--space-2));
+  right: 0;
+  background: white;
+  border: 1px solid var(--color-gray-200);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  min-width: 280px;
+  z-index: var(--z-dropdown);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-10px);
+  transition: all var(--transition-fast);
+}
+
+.user-dropdown.show {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.user-dropdown-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border-bottom: 1px solid var(--color-gray-200);
+}
+
+.user-dropdown-section {
+  padding: var(--space-2);
+}
+
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  width: 100%;
+  padding: var(--space-3);
+  background: none;
+  border: none;
+  border-radius: var(--radius-md);
+  color: var(--color-gray-700);
+  text-decoration: none;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.dropdown-item:hover {
+  background-color: var(--color-gray-100);
+  color: var(--color-gray-900);
+}
+
+.dropdown-item-danger {
+  color: var(--color-error);
+}
+
+.dropdown-item-danger:hover {
+  background-color: #fee2e2;
+  color: #991b1b;
+}
+
+.dropdown-icon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+/* Search Styles */
+.search-container {
+  position: relative;
+}
+
+.search-input {
+  width: 300px;
+  padding: var(--space-2) var(--space-3) var(--space-2) var(--space-10);
+  border: 1px solid var(--color-gray-300);
+  border-radius: var(--radius-lg);
+  font-size: 0.875rem;
+  transition: all var(--transition-fast);
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: var(--color-primary-500);
+  box-shadow: 0 0 0 3px rgb(139 109 255 / 0.1);
+}
+
+.search-container::before {
+  content: "🔍";
+  position: absolute;
+  left: var(--space-3);
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--color-gray-400);
+}
+
+/* Main Page Content */
+.main-page-content {
+  padding: var(--space-6);
+  max-width: 100%;
+}
+
+@media (min-width: 1024px) {
+  .main-page-content {
+    padding: var(--space-8);
+  }
+}
+
+/* Loading Overlay */
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.9);
+  z-index: var(--z-modal);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.loading-content {
+  text-align: center;
+}
+
+.loading-text {
+  margin-top: var(--space-4);
+  color: var(--color-gray-600);
+  font-weight: 500;
+}
+
+/* Responsive Improvements */
+@media (max-width: 1023px) {
+  .sidebar {
+    width: 100%;
+    max-width: 280px;
+  }
+  
+  .search-input {
+    width: 200px;
+  }
+}
+
+@media (max-width: 768px) {
+  .main-page-content {
+    padding: var(--space-4);
+  }
+  
+  .user-dropdown {
+    min-width: 240px;
+  }
+  
+  .topnav-content {
+    padding: var(--space-3) var(--space-4);
+  }
+}
+
+/* Enhanced Focus States for Accessibility */
+.user-menu-button:focus-visible {
+  outline: 2px solid var(--color-primary-500);
+  outline-offset: 2px;
+}
+
+.dropdown-item:focus-visible {
+  outline: 2px solid var(--color-primary-500);
+  outline-offset: 2px;
+}
+
+/* Mobile Menu Animation */
+@media (max-width: 1023px) {
+  .sidebar {
+    transition: transform var(--transition-base);
+  }
+  
+  .sidebar.open {
+    transform: translateX(0);
+  }
+}
+
+/* Dark Mode Support - Controlled via manual .dark-mode toggle */
+.dark-mode .user-dropdown {
+  background: var(--color-gray-800);
+  border-color: var(--color-gray-700);
+}
+
+.dark-mode .dropdown-item:hover {
+  background-color: var(--color-gray-700);
+}
+
+/* Print Styles */
+@media print {
+  .sidebar,
+  .topnav,
+  .user-dropdown,
+  .loading-overlay,
+  .toast-container {
+    display: none !important;
+  }
+  
+  .main-content {
+    margin-left: 0 !important;
+  }
+  
+  .main-page-content {
+    padding: 0 !important;
+  }
+}

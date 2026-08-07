@@ -10,42 +10,44 @@ class UserSeeder extends Seeder
 {
     public function run(): void
     {
-        // Usuario Administrador
+        // ── Admin ──────────────────────────────────────────────────────────────
         User::updateOrCreate(
             ['email' => 'admin@sistema.com'],
             [
-                'password' => Hash::make('password123'),
-                'role' => User::ROLE_ADMIN,
-                'nombres' => 'Administrador',
-                'apellido_paterno' => 'Sistema',
-                'apellido_materno' => null,
-                'name' => 'Administrador Sistema',
+                'name'              => 'Administrador Sistema',
+                'password'          => Hash::make('password123'),
+                'role'              => User::ROLE_ADMIN,
+                'estatus'           => User::ESTATUS_ACTIVO,
+                'nombres'           => 'Administrador',
+                'apellido_paterno'  => 'Sistema',
+                'apellido_materno'  => null,
             ]
         );
 
-        // Usuario Operador
+        // ── Operadores ─────────────────────────────────────────────────────────
         User::updateOrCreate(
             ['email' => 'operador@sistema.com'],
             [
-                'password' => Hash::make('password123'),
-                'role' => User::ROLE_OPERADOR,
-                'nombres' => 'Operador',
-                'apellido_paterno' => 'Ejemplo',
-                'apellido_materno' => null,
-                'name' => 'Operador Ejemplo',
+                'name'              => 'Carlos Mendoza López',
+                'password'          => Hash::make('password123'),
+                'role'              => User::ROLE_OPERADOR,
+                'estatus'           => User::ESTATUS_ACTIVO,
+                'nombres'           => 'Carlos',
+                'apellido_paterno'  => 'Mendoza',
+                'apellido_materno'  => 'López',
             ]
         );
 
-        // Usuario Cliente
         User::updateOrCreate(
-            ['email' => 'cliente@sistema.com'],
+            ['email' => 'operador2@sistema.com'],
             [
-                'password' => Hash::make('password123'),
-                'role' => User::ROLE_CLIENTE,
-                'nombres' => 'Cliente',
-                'apellido_paterno' => 'Demo',
-                'apellido_materno' => null,
-                'name' => 'Cliente Demo',
+                'name'              => 'María García Ruiz',
+                'password'          => Hash::make('password123'),
+                'role'              => User::ROLE_OPERADOR,
+                'estatus'           => User::ESTATUS_ACTIVO,
+                'nombres'           => 'María',
+                'apellido_paterno'  => 'García',
+                'apellido_materno'  => 'Ruiz',
             ]
         );
     }

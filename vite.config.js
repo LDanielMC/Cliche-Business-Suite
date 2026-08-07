@@ -5,23 +5,52 @@ import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig({
     plugins: [
+        tailwindcss(),
         laravel({
-            input: ['resources/css/app.css', 'resources/js/app.js'],
+            input: [
+                'resources/css/tailwind.css',
+                'resources/css/modern-design-system.css',
+                'resources/css/modern-navigation.css',
+                'resources/css/modern-components.css',
+                'resources/js/app.js',
+                'resources/js/modern-ux-system.js'
+            ],
             refresh: true,
             fonts: [
-                bunny('Instrument Sans', {
-                    weights: [400, 500, 600],
+                bunny('Inter', {
+                    weights: [300, 400, 500, 600, 700],
+                    display: 'swap',
+                }),
+                bunny('Space Grotesk', {
+                    weights: [500, 600, 700],
+                    display: 'swap',
                 }),
             ],
         }),
-        tailwindcss(),
     ],
     optimizeDeps: {
-        include: ['chart.js'],
+        include: [
+            'chart.js',
+            'alpinejs',
+            'axios'
+        ],
+    },
+    build: {
+        cssCodeSplit: true,
     },
     server: {
         watch: {
             ignored: ['**/storage/framework/views/**'],
         },
+        hmr: {
+            overlay: false
+        }
     },
+    resolve: {
+        alias: {
+            '@': '/resources/js',
+            '@css': '/resources/css',
+            '@components': '/resources/views/components'
+        }
+    }
 });
