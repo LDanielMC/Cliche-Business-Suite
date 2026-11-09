@@ -260,9 +260,10 @@ class PaqueteAprobacionController extends Controller
      */
     private function gcsClient(): StorageClient
     {
-        return new StorageClient([
+        return new StorageClient(array_filter([
             'keyFilePath' => config('filesystems.disks.gcs.key_file'),
-        ]);
+            'projectId'   => config('filesystems.disks.gcs.project_id'),
+        ]));
     }
 
     private function guardarImagenComprimida(string $origen, string $destino, int $maxPx = 2000, int $calidad = 85): void

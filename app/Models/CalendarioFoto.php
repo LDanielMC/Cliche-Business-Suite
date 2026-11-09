@@ -58,7 +58,7 @@ class CalendarioFoto extends Model
         // Mismo criterio que FotoAprobacion::getUrlAttribute(): fotos nuevas
         // viven en GCS, las legacy del disco local mantienen la URL anterior.
         if (str_starts_with($this->fotografia_asociada, 'fotos-aprobacion/')) {
-            return 'https://storage.googleapis.com/' . env('GCS_BUCKET', 'cliche-fotos-prod') . '/' . $this->fotografia_asociada;
+            return 'https://storage.googleapis.com/' . config('filesystems.disks.gcs.bucket') . '/' . $this->fotografia_asociada;
         }
 
         return Storage::disk('public')->url($this->fotografia_asociada);

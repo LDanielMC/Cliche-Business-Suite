@@ -16,9 +16,10 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Storage::extend('gcs', function ($app, $config) {
-            $client = new StorageClient([
+            $client = new StorageClient(array_filter([
                 'keyFilePath' => $config['key_file'],
-            ]);
+                'projectId'   => $config['project_id'] ?? null,
+            ]));
 
             $bucket  = $client->bucket($config['bucket']);
             $prefix  = $config['path_prefix'] ?? '';

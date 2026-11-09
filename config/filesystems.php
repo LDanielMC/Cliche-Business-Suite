@@ -49,10 +49,12 @@ return [
 
         'gcs' => [
             'driver'          => 'gcs',
-            'key_file'        => storage_path('app/sapient-helix-428301-d6-14f285c49312.json'),
-            'bucket'          => env('GCS_BUCKET', 'cliche-fotos-prod'),
+            // Archivo JSON de la cuenta de servicio, dentro de storage/app (no se versiona).
+            'key_file'        => storage_path('app/' . env('GCS_KEY_FILE', 'gcs-service-account.json')),
+            'project_id'      => env('GCS_PROJECT_ID'),
+            'bucket'          => env('GCS_BUCKET'),
             'path_prefix'     => env('GCS_PATH_PREFIX', ''),
-            'storage_api_uri' => env('GCS_URL', 'https://storage.googleapis.com/cliche-fotos-prod'),
+            'storage_api_uri' => env('GCS_URL'),
             'visibility'      => 'public',
         ],
 

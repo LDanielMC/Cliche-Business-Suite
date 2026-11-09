@@ -56,7 +56,7 @@ class FotoAprobacion extends Model
         // Las fotos nuevas van a GCS (ruta sin prefijo /storage/)
         // Las fotos legacy del disco local mantienen la URL anterior
         if (str_starts_with($this->ruta_foto, 'fotos-aprobacion/')) {
-            return 'https://storage.googleapis.com/' . env('GCS_BUCKET', 'cliche-fotos-prod') . '/' . $this->ruta_foto;
+            return 'https://storage.googleapis.com/' . config('filesystems.disks.gcs.bucket') . '/' . $this->ruta_foto;
         }
 
         return Storage::disk('public')->url($this->ruta_foto);
