@@ -1,174 +1,96 @@
 # Cliche Business Suite
 
-Sistema de Gestión Integral para Servicios de Posicionamiento Local.
+Sistema de gestión para una agencia que vende servicios de posicionamiento local: lleva el control de clientes, renovaciones de servicio, pagos y gastos, y permite que el cliente apruebe las fotografías que se publicarán en su perfil. Lo usan tres perfiles: administrador, operador y cliente.
 
-## Stack tecnológico
+## Funcionalidades principales
 
-- **PHP** 8.3+
-- **Laravel** 13
-- **MySQL** 8+ (vía WAMP)
-- **Tailwind CSS** v4
-- **Alpine.js** v3
-- **Vite** 8
-- **Node.js** 22+
-- **Composer** 2+
+- **Clientes:** alta, edición, baja con restauración, lista de suspendidos y bitácora de cambios de estatus. Las cuentas se activan por correo con un token con vigencia.
+- **Renovaciones:** control de vencimientos con periodo de gracia, historial, solicitud de renovación desde el portal del cliente, suspensión y cancelación, y recordatorios automáticos.
+- **Aprobación de fotografías:** el operador carga un paquete de fotos y el cliente recibe una notificación para seleccionar y aprobar. Si no responde, las fotos se aprueban automáticamente; las no elegidas pasan a un banco de reserva con fecha de expiración y prioridad. Se avisa al operador cuando las fotos son insuficientes.
+- **Calendario de fotos:** programación, reprogramación, cancelación y publicación de fotografías por cliente.
+- **Pagos:** el historial se genera desde las renovaciones; el cliente envía su comprobante al renovar y el administrador lo valida o lo rechaza.
+- **Gastos operativos:** registro por categoría, con catálogo de categorías.
+- **Bóveda de contraseñas:** credenciales de los clientes guardadas cifradas; el acceso pide un código de verificación enviado por correo y queda registrado.
+- **Reportes:** cartera, financiero, rentabilidad y gastos operativos.
+- **Notificaciones** dentro de la aplicación y por correo.
+- **Respaldos** de la base de datos.
+- **Seguridad:** roles por ruta, límite de intentos en login y recuperación de contraseña, cierre de sesión por inactividad (30 minutos por defecto, configurable) y recuperación de contraseña con código.
 
----
+## Capturas
 
-## Requisitos previos
+<!-- Agrega aquí tus imágenes, por ejemplo: ![Panel de administración](docs/capturas/panel.png) -->
 
-Antes de instalar asegúrate de tener lo siguiente en tu máquina:
+_Pendiente._
 
-| Herramienta | Versión mínima | Descarga |
-|---|---|---|
-| PHP | 8.3 | [php.net](https://www.php.net/downloads) o incluido en WAMP |
-| Composer | 2.0 | [getcomposer.org](https://getcomposer.org) |
-| Node.js | 18.0 | [nodejs.org](https://nodejs.org) |
-| WAMP / XAMPP | cualquiera con MySQL 8+ | [wampserver.com](https://www.wampserver.com) |
-| Git | cualquiera | [git-scm.com](https://git-scm.com) |
+## Stack
 
-> **Windows:** asegúrate de que `php`, `composer` y `node` estén en el PATH del sistema.
-
----
-
-## Instalación
-
-### 1. Clonar el repositorio
-
-```bash
-git clone <url-del-repositorio> "Cliche Business Suite"
-cd "Cliche Business Suite"
-```
-
-### 2. Instalar dependencias PHP
-
-```bash
-composer install
-```
-
-### 3. Instalar dependencias Node
-
-```bash
-npm install
-```
-
-### 4. Configurar el archivo de entorno
-
-```bash
-copy .env.example .env
-```
-
-Abre el `.env` y ajusta los datos de tu base de datos:
-
-```env
-APP_NAME="Cliche Business Suite"
-APP_URL=http://localhost:8000
-
-DB_CONNECTION=mysql
-DB_HOST=127.0.0.1
-DB_PORT=3306
-DB_DATABASE=nombre_de_tu_base_de_datos
-DB_USERNAME=root
-DB_PASSWORD=
-```
-
-> **Nota:** La contraseña de MySQL en WAMP suele estar vacía por defecto.
-
-### 5. Generar la clave de aplicación
-
-```bash
-php artisan key:generate
-```
-
-### 6. Crear la base de datos
-
-Abre **phpMyAdmin** (http://localhost/phpmyadmin) o tu cliente MySQL y crea una base de datos nueva con el mismo nombre que pusiste en `DB_DATABASE`, usando cotejamiento `utf8mb4_unicode_ci`.
-
-También puedes hacerlo desde la terminal de WAMP:
-
-```bash
-mysql -u root -e "CREATE DATABASE nombre_de_tu_base_de_datos CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
-```
-
-### 7. Ejecutar migraciones
-
-```bash
-php artisan migrate
-```
-
----
-
-## Levantar el proyecto
-
-Necesitas dos terminales corriendo en paralelo:
-
-**Terminal 1 — Servidor PHP:**
-```bash
-php artisan serve
-```
-
-**Terminal 2 — Assets (Vite + Tailwind):**
-```bash
-npm run dev
-```
-
-Luego abre tu navegador en: **http://localhost:8000**
-
----
-
-## Comandos útiles
-
-| Comando | Descripción |
+| Capa | Tecnología |
 |---|---|
-| `php artisan serve` | Inicia el servidor de desarrollo |
-| `npm run dev` | Compila assets en modo desarrollo con hot reload |
-| `npm run build` | Compila assets para producción |
-| `php artisan migrate` | Ejecuta las migraciones pendientes |
-| `php artisan migrate:fresh` | Borra y vuelve a crear todas las tablas |
-| `php artisan migrate:fresh --seed` | Ídem + carga datos de prueba |
-| `php artisan route:list` | Lista todas las rutas registradas |
-| `php artisan make:model NombreModelo -mcr` | Crea modelo, migración y controlador resource |
-| `php artisan tinker` | Consola interactiva de Laravel |
+| Backend | PHP ^8.3, Laravel 13 (13.11.2 en `composer.lock`) |
+| Base de datos | MySQL 8+ (SQLite en memoria para las pruebas) |
+| Frontend | Blade, Tailwind CSS 4, Alpine.js 3, Vite 8, Chart.js 4, Lucide |
+| Almacenamiento de fotos | Google Cloud Storage (`google/cloud-storage` 2.3, Flysystem) |
+| PDF | barryvdh/laravel-dompdf 3.1 |
+| Pruebas | PHPUnit 12 |
 
----
+## Arquitectura
 
-## Estructura del proyecto
+Aplicación monolítica MVC con Laravel:
 
-```
-Cliche Business Suite/
-├── app/
-│   ├── Http/
-│   │   ├── Controllers/    # Controladores MVC
-│   │   └── Middleware/
-│   └── Models/             # Modelos Eloquent
-├── database/
-│   ├── migrations/         # Migraciones de base de datos
-│   └── seeders/            # Datos de prueba
-├── resources/
-│   ├── css/
-│   │   └── app.css         # Tailwind CSS (punto de entrada)
-│   ├── js/
-│   │   └── app.js          # JavaScript / Alpine.js
-│   └── views/              # Vistas Blade
-├── routes/
-│   └── web.php             # Rutas de la aplicación
-├── .env.example            # Plantilla de configuración
-├── vite.config.js          # Configuración de Vite
-└── composer.json
+- `app/Http/Controllers/`: un controlador por módulo (clientes, renovaciones, aprobaciones, calendario, pagos, gastos, bóveda, reportes, respaldos, notificaciones).
+- Rutas agrupadas por rol (`admin`, `operador`, `cliente`) con un middleware de roles y otro de expiración de sesión.
+- `app/Models/`: modelos Eloquent (Cliente, ControlRenovacion, PaqueteAprobacion, FotoAprobacion, CalendarioFoto, PagoCliente, GastoOperativo, BovedaContrasena, entre otros).
+- `app/Notifications/` y `app/Mail/`: notificaciones internas y correos transaccionales.
+- `app/Console/Commands/` programados a diario en `routes/console.php`: `aprobaciones:auto-aprobar`, `aprobaciones:recordatorio-pendientes`, `reservas:expirar` y `renovaciones:verificar`.
+- `database/migrations/` (37 migraciones) y `database/seeders/` con datos de demostración.
+- `docs/`: diagramas PlantUML y draw.io de los flujos (login, clientes, aprobación de fotografías, renovaciones) y documentación técnica del módulo de aprobación y calendario.
+
+## Instalación y ejecución
+
+Requisitos: PHP 8.3+, Composer 2, Node.js y MySQL 8+ (por ejemplo, con WAMP en Windows).
+
+```bash
+git clone https://github.com/LDanielMC/Cliche-Business-Suite.git
+cd Cliche-Business-Suite
+composer install
+cp .env.example .env
+php artisan key:generate
+npm install --ignore-scripts
 ```
 
----
+En `.env`, ajusta la conexión a MySQL (`.env.example` trae `DB_PORT=3308` y la base `cliche_business_suite`; cambia el puerto si el tuyo es otro) y crea la base de datos con cotejamiento `utf8mb4_unicode_ci`. Luego:
 
-## Problemas comunes
+```bash
+php artisan migrate --seed   # crea las tablas y datos de demostración
+composer dev                 # servidor, cola, logs y Vite en paralelo
+```
 
-**`php` no se reconoce como comando**
-→ Agrega la carpeta de PHP de WAMP al PATH del sistema (ej. `C:\wamp64\bin\php\php8.3.x`).
+La app queda en `http://localhost:8000`. `composer setup` ejecuta la instalación, las migraciones y `npm run build` en un solo paso.
 
-**Error de conexión a la base de datos**
-→ Verifica que WAMP esté corriendo (ícono verde) y que `DB_DATABASE`, `DB_USERNAME` y `DB_PASSWORD` en tu `.env` sean correctos.
+### Variables y configuración relevantes
 
-**Puerto 8000 ocupado**
-→ Usa `php artisan serve --port=8080` para cambiar el puerto.
+| Variable | Uso |
+|---|---|
+| `DB_*` | Conexión a MySQL |
+| `MAIL_*` | Envío de correos (`MAIL_MAILER=log` en desarrollo escribe los correos en el log) |
+| `QUEUE_CONNECTION` | Cola de trabajos (`database` por defecto) |
+| `SESSION_TIMEOUT_MINUTES` | Minutos de inactividad antes de cerrar la sesión (30 por defecto) |
+| `GCS_KEY_FILE`, `GCS_PROJECT_ID`, `GCS_BUCKET`, `GCS_URL`, `GCS_PATH_PREFIX` | Cuenta de servicio, proyecto y bucket de Google Cloud Storage para las fotografías |
 
-**Vite no encuentra los assets**
-→ Asegúrate de que `npm run dev` esté corriendo antes de acceder al sitio en desarrollo.
+El disco `gcs` de `config/filesystems.php` lee la llave de la cuenta de servicio de Google del archivo `storage/app/<GCS_KEY_FILE>`. Ese JSON no se incluye en el repositorio y `.gitignore` excluye `storage/app/*.json`.
+
+### Tareas programadas
+
+Para que corran los comandos diarios, agrega al cron del servidor:
+
+```
+* * * * * cd /ruta/al/proyecto && php artisan schedule:run >> /dev/null 2>&1
+```
+
+## Pruebas
+
+```bash
+composer test    # limpia la caché de configuración y ejecuta php artisan test
+```
+
+Las pruebas son de funcionalidad (PHPUnit) y corren con SQLite en memoria. Cubren aprobación y auto-aprobación de fotos, calendario, expiración de reservas, renovaciones con periodo de gracia, notificaciones y correos, gastos y categorías, bóveda de contraseñas, panel del operador, los cuatro reportes y la consistencia de los seeders.
